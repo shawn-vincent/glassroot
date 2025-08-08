@@ -9,7 +9,6 @@ import DocumentNew from './pages/DocumentNew'
 import DocumentView from './pages/DocumentView'
 import Search from './pages/Search'
 import './styles.css'
-import '@chatscope/chat-ui-kit-styles/dist/default/styles.min.css'
 
 const router = createBrowserRouter([
   {

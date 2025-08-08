@@ -9,11 +9,12 @@
     "preview": "vite preview --port 5173"
   },
   "dependencies": {
-    "@chatscope/chat-ui-kit-react": "^2.1.1",
-    "@chatscope/chat-ui-kit-styles": "^1.4.0",
+    "@assistant-ui/react": "^0.10.36",
+    "@assistant-ui/react-ai-sdk": "^0.11.1",
     "@codemirror/lang-markdown": "^6.2.4",
     "@tanstack/react-query": "^5.51.9",
     "@uiw/react-codemirror": "^4.22.3",
+    "ai": "^5.0.8",
     "codemirror": "^6.0.1",
     "lucide-react": "^0.441.0",
     "react": "^18.3.1",

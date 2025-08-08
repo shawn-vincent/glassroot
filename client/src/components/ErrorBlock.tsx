@@ -1,3 +1,5 @@
+import { Copy } from 'lucide-react'
+
 type ErrorPayload = {
   message: string
   status?: number
@@ -18,7 +20,10 @@ export default function ErrorBlock({ error }: Props) {
       {data.timestamp && <div className="muted">Time: {data.timestamp}</div>}
       {data.correlationId && <div className="muted">Correlation ID: {data.correlationId}</div>}
       <div style={{marginTop: '.5rem'}}>
-        <button type="button" onClick={() => copyDetails(data)}>Copy details</button>
+        <button type="button" onClick={() => copyDetails(data)} className="icon-button">
+          <Copy size={14} />
+          Copy details
+        </button>
       </div>
     </div>
   )

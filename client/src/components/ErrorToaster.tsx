@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { onError } from '../lib/errors'
+import { X } from 'lucide-react'
 
 export default function ErrorToaster() {
   const [msg, setMsg] = useState<string | null>(null)
@@ -18,7 +19,9 @@ export default function ErrorToaster() {
       <div className="card" style={{ background: '#ff6b6b10', borderColor: '#ff6b6b55'}}>
         <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', gap: 12}}>
           <div><strong>Error:</strong> {msg}</div>
-          <button type="button" onClick={() => setMsg(null)}>Dismiss</button>
+          <button type="button" onClick={() => setMsg(null)} className="icon-button">
+            <X size={16} />
+          </button>
         </div>
       </div>
     </div>

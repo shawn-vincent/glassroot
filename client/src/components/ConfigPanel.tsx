@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import PromptEditor from './PromptEditor'
 import ModelPicker from './ModelPicker'
+import { X, Eye, EyeOff } from 'lucide-react'
 
 type Props = { onClose: () => void }
 
@@ -35,14 +36,20 @@ export default function ConfigPanel({ onClose }: Props) {
       <dialog open className="panel" onKeyDown={onSheetKey}>
         <header>
           <h3>Configuration</h3>
-          <button type="button" onClick={onClose}>Close</button>
+          <button type="button" onClick={onClose} className="icon-button">
+            <X size={18} />
+            Close
+          </button>
         </header>
         <div className="grid" style={{marginTop: '.5rem'}}>
           <div>
             <label htmlFor="cfg_api_key">OpenRouter API Key</label>
             <div className="row">
               <input id="cfg_api_key" type={show ? 'text' : 'password'} value={apiKey} onChange={e => setApiKey(e.target.value)} placeholder="sk-or-..." style={{width:'100%'}} />
-              <button type="button" onClick={() => setShow(s => !s)}>{show ? 'Hide' : 'Show'}</button>
+              <button type="button" onClick={() => setShow(s => !s)} className="icon-button">
+                {show ? <EyeOff size={16} /> : <Eye size={16} />}
+                {show ? 'Hide' : 'Show'}
+              </button>
             </div>
             <label htmlFor="cfg_model">Model</label>
             <div id="cfg_model">

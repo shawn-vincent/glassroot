@@ -3,6 +3,7 @@ import ConfigPanel from './components/ConfigPanel'
 import OfflineIndicator from './components/OfflineIndicator'
 import ErrorToaster from './components/ErrorToaster'
 import { useEffect, useState } from 'react'
+import { Sun, Moon, Monitor, Settings } from 'lucide-react'
 
 export default function App() {
   const [showConfig, setShowConfig] = useState(false)
@@ -22,7 +23,10 @@ export default function App() {
           <Link to="/search" className={pathname.startsWith('/search') ? 'active' : ''}>Search</Link>
         </nav>
         <div className="actions">
-          <button type="button" onClick={() => setShowConfig(true)}>Config</button>
+          <button type="button" onClick={() => setShowConfig(true)} className="icon-button">
+            <Settings size={18} />
+            Config
+          </button>
           <ThemeToggle />
         </div>
       </header>
@@ -38,18 +42,39 @@ export default function App() {
 
 function ThemeToggle() {
   const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'auto')
+  
   useEffect(() => {
-    if (theme === 'auto') document.documentElement.removeAttribute('data-theme')
-    else document.documentElement.setAttribute('data-theme', theme)
+    if (theme === 'auto') {
+      document.documentElement.removeAttribute('data-theme')
+    } else {
+      document.documentElement.setAttribute('data-theme', theme)
+    }
+    localStorage.setItem('theme', theme)
   }, [theme])
+  
+  const cycleTheme = () => {
+    const themes = ['auto', 'light', 'dark']
+    const currentIndex = themes.indexOf(theme)
+    const nextTheme = themes[(currentIndex + 1) % themes.length]
+    setTheme(nextTheme)
+  }
+  
+  const getThemeIcon = () => {
+    switch (theme) {
+      case 'light': return <Sun size={18} />
+      case 'dark': return <Moon size={18} />
+      default: return <Monitor size={18} />
+    }
+  }
+  
   return (
-    <select
-      value={theme}
-      onChange={(e) => { const next = e.target.value; setTheme(next); localStorage.setItem('theme', next) }}
+    <button 
+      type="button" 
+      onClick={cycleTheme}
+      className="icon-button theme-toggle"
+      title={`Theme: ${theme}`}
     >
-      <option value="auto">Auto</option>
-      <option value="light">Light</option>
-      <option value="dark">Dark</option>
-    </select>
+      {getThemeIcon()}
+    </button>
   )
 }
