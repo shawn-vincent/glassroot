@@ -22,7 +22,7 @@ Principles: Simplicity > elegance > normality > robustness > performance > funct
 ## 3) Toolchain & System Requirements
 - Node.js LTS (v20+), npm 10+.
 - Cloudflare Wrangler CLI (`npm i -g wrangler`).
-- Expo CLI (`npx expo`), EAS CLI (optional for native builds).
+- Vite (dev dependency in `client/`) and TypeScript.
 - Biome (ships in workspaces), TypeScript.
 - GitHub Actions (or your CI) with secrets configured.
 
@@ -45,13 +45,11 @@ Principles: Simplicity > elegance > normality > robustness > performance > funct
   - Optional: create and seed local D1: `wrangler d1 execute <DB_NAME> --file api/schema.sql`.
   - Create Vectorize index in Cloudflare dashboard for dev testing, or toggle the dev flag to bind to prod index for experimentation.
 - One‑command dev:
-  - Root: `npm run dev` launches client web via Expo Router and API via Wrangler with CORS.
+  - Root: `npm run dev` launches client web via Vite/React Router and API via Wrangler with CORS.
 - Quality loop:
   - `npm run check` (typecheck + lint) at root and in workspaces.
   - Biome auto‑format on save (editor integration recommended).
-- Native/devices:
-  - `npm run client:ios` / `client:android` for simulators.
-  - `npm run client:electron` for desktop wrapper.
+  
 
 ## 6) CI/CD — Two Push‑Based Deployments
 - CI: GitHub Actions (reference) with two workflows:
@@ -68,7 +66,7 @@ Principles: Simplicity > elegance > normality > robustness > performance > funct
   - `PAGES_PROJECT_NAME_STAGING`, `PAGES_PROJECT_NAME_PROD` (if distinct), or reuse with env aliases.
   - D1/Vectorize ids configured in environment‑specific `wrangler.toml` sections or via env vars.
 - Deployment artifacts:
-  - Client: `client/dist/web` from `expo export -p web`.
+  - Client: `client/dist` from Vite build.
   - API: Worker bundle from `api/` via `wrangler deploy`.
 
 ### Example CI Steps (Conceptual)
@@ -134,11 +132,10 @@ Principles: Simplicity > elegance > normality > robustness > performance > funct
 - Conventional Commits + auto‑changelog (optional) for release notes.
 
 ## 12) Onboarding Checklist
-- Install Node LTS, Wrangler CLI, and Expo.
+- Install Node LTS and Wrangler CLI.
 - `npm install` at root.
 - `npm run dev` to launch web and API locally.
 - Configure Cloudflare account locally if needed (`wrangler login`).
-- For native testing, set up iOS/Android tooling per Expo docs.
  - First success: open localhost app, create a document, run a search, verify `/api/health` returns `{ ok: true }`.
 
 ## 13) Operational Runbooks (Quick Recipes)

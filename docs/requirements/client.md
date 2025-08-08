@@ -2,12 +2,12 @@
 
 ## 1) Goals & Principles
 - Simplicity > elegance > normality > robustness > performance > functionality.
-- Deliver a fast, understandable, and reliable multi‑platform app with minimal surprises.
+- Deliver a fast, understandable, and reliable React web SPA.
 - Prefer well‑adopted, actively maintained libraries; avoid over‑engineering.
 
 ## 2) Platforms & Distribution
-- Web (static export), iOS, Android, and Desktop (Electron wrapper).
-- Single codebase via Expo/React Native; platform‑specific affordances where necessary.
+- Web only (Single‑Page Application, static assets).
+- Built as a React SPA; deployed to a static host (e.g., Cloudflare Pages) with SPA routing fallback to `index.html`.
 
 ## 3) Information Architecture & Navigation
 - Global site menu switches between:
@@ -56,7 +56,7 @@
 - LLM Engine Choice: Fetch models from OpenRouter; allow selection; cache last successful list.
 - OpenRouter API Key: Password field with visibility toggle (“eye” icon); locally stored.
 - Requirements:
-  - Persist settings locally (web: localStorage; native: AsyncStorage) under stable keys.
+  - Persist settings locally via `localStorage` under stable keys.
   - If model list fetch fails, fall back to cached list and mark as “stale”; if none cached, disable selection and show error.
   - Changes take effect for subsequent LLM calls without restart.
 - Edge cases:
@@ -79,18 +79,16 @@
 ## 6) Technical Design
 
 ### 6.1 Stack & Libraries
-- Framework: Expo + React Native + Expo Router (file‑based routing).
-- UI: Tamagui (design system, theming, primitives) + NativeWind/Tailwind utilities where helpful.
+- Framework: React + Vite + React Router (file‑based or config‑based routing as needed).
+- UI: Lightweight approach with CSS variables + utility CSS (e.g., Tailwind) or a small component library; avoid mobile‑first RN UI kits.
 - State: React state + lightweight Context; avoid global stores. Local drafts kept in component state.
-- Data‑fetching: TanStack Query (React Query) for Web/RN for caching, retries (disabled by default), and stale data labeling.
-- Storage: `@react-native-async-storage/async-storage` (native) and `localStorage` (web) behind a unified helper.
-- Editor (Prompt):
-  - Web: CodeMirror 6 with Markdown highlighting (`@codemirror/lang-markdown`), autogrow and soft wrap.
-  - Native: Fallback to multiline `TextInput` with syntax‑colored preview optional; keep simple for reliability.
-- Icons: Lucide (via Tamagui).
+- Data‑fetching: TanStack Query (React Query) for caching, retries (disabled by default), and stale data labeling.
+- Storage: `localStorage` for client settings and drafts where applicable.
+- Editor (Prompt): CodeMirror 6 with Markdown highlighting (`@codemirror/lang-markdown`), autogrow and soft wrap.
+- Icons: Lucide (web package) or similar.
 - Validation: `zod` for client input.
 - Error boundaries: `react-error-boundary` for global catches with graceful UI.
-- Feature Flags: simple env-driven flags (e.g., `process.env`) to toggle streaming, snippets, and proxy usage for experiments.
+- Feature Flags: simple env‑driven flags (e.g., `import.meta.env`) to toggle streaming, snippets, and proxy usage for experiments.
 
 ### 6.2 Data Flows
 - Client → API: JSON over HTTPS to Worker endpoints.
@@ -107,14 +105,12 @@
  - Copy Details: Provide a "Copy details" action that copies `{message, status, timestamp, correlationId}` with sensitive values redacted.
 
 ### 6.4 Theming & Layout
-- Tamagui Provider; default theme from system or last saved setting; instant switch.
+- Theme via CSS variables or a lightweight theming solution; default from system or last saved setting; instant switch.
 - Respect “reduce motion” for animations and micro‑interactions.
 
 ### 6.5 Packaging & Builds
-- Web: `expo export -p web` static site (deployed to any static host).
-- iOS/Android: EAS local builds for distribution.
-- Desktop: Electron packaging using `electron-builder` with web export bundled.
- - Electron Security: enable `contextIsolation`, disable `nodeIntegration`, restrict `webPreferences` to reduce risk; load local static assets.
+- Web: Vite build (`npm run build`) outputs static assets in `client/dist`.
+- Deployment: Upload `dist` to static hosting (e.g., Cloudflare Pages). Configure SPA fallback to serve `index.html` on unknown routes.
 
 ### 6.6 Code Splitting
 - Load the prompt editor (CodeMirror) on demand to reduce initial bundle size on Home/Documents when editor is not visible.
@@ -131,9 +127,9 @@
 
 ## 8) Testing Strategy
 - Unit: Helpers, storage adapters, error mappers, prompt editor behaviors.
-- Component: Key screens with React Testing Library (web) and testing-library/native (RN).
+- Component: Key screens with React Testing Library (JSDOM).
 - Integration: Mock API and OpenRouter responses; verify offline, stale cache flows, and error surfacing.
-- Manual: Cross‑platform theming, keyboard navigation, and screen reader labels.
+- Manual: Web theming, keyboard navigation, and screen reader labels.
  - Additional: token-length warnings, code-split editor load path, feature flag toggles, copy-error action.
 
 ## 9) Acceptance Criteria (Samples)
@@ -143,4 +139,3 @@
 - Errors appear inline, include original message and status, and never show secrets.
  - Copy error details copies message/status/timestamp/correlationId with secrets redacted.
  - Cached lists show a clear last-updated timestamp; refresh updates it.
-
