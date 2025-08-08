@@ -8,6 +8,12 @@
 ## 2) API Surface (v1)
 Base: `/api`
 
+### 2.0 Health Check
+- Method/Path: `GET /api/health`
+- Behavior: Returns static JSON with server timestamp, environment name, and bindings presence summary (booleans for `DB`, `VECTORS`, `AI`).
+- Response: `200` `{ ok: true, timestamp, env, bindings: { DB, VECTORS, AI } }`.
+- Purpose: Monitoring, CI smoke tests, and operational diagnostics.
+
 ### 2.1 Create Document
 - Method/Path: `POST /api/documents`
 - Request: JSON `{ title: string, content: string }`
@@ -59,19 +65,23 @@ Base: `/api`
   - Search `limit` default 10, max 20.
 
 ## 4) Error Handling & Surfacing (Contract)
-- All errors return JSON.
-- Include original error message text in `error` (after redacting secrets).
-- Include `status`, `timestamp`, and optional `correlationId` (UUID per request).
+- All errors return JSON with a standard schema:
+  - Shape: `{ error: string, status: number, timestamp: string, correlationId: string }`
+  - `error`: original message text from provider/system (secrets redacted).
+  - `status`: HTTP status code.
+  - `timestamp`: ISO 8601.
+  - `correlationId`: UUID v4 generated per request; also returned via `X-Correlation-Id` header.
 - Examples:
   - `400 { error: "Missing query parameter: q", status: 400, timestamp, correlationId }`
   - `500 { error: "Vectorize upsert failed: <provider message>", status: 500, timestamp, correlationId }`
-- CORS: Enabled; in production, restrict `Access-Control-Allow-Origin` to trusted origins.
+- CORS: Enabled; restrict `Access-Control-Allow-Origin` to trusted staging/prod origins in those environments.
 
 ## 5) Security
 - No auth in v1; consider service keys/JWT in v1.1.
 - Never echo request bodies or secrets in logs.
 - Redact anything that looks like an API key/token in error surfaces.
 - Consider rate limiting (per IP) at Worker level to deter abuse.
+  - Initial rule: throttle `POST /api/documents` to ~60 requests/minute per IP in production.
 
 ## 6) Observability
 - Structured logs with JSON objects for errors and notable events.
@@ -107,13 +117,17 @@ Base: `/api`
 - Data Access: Raw SQL via D1 `prepare()`; keep schema minimal.
 - Embeddings: One‑shot embedding per document content and per query.
 - Search: `VECTORS.query(values, { topK, returnMetadata: true })`.
-- Error Shape: Centralized helper to wrap errors with `status`, `timestamp`, `correlationId`, and redaction.
+- Error Shape: Centralized helper to wrap errors with `status`, `timestamp`, `correlationId`, and redaction; set `X-Correlation-Id` header on all responses.
 - Input Validation: `zod` parsing for POST and query params.
+- Health Endpoint: Lightweight handler reports `bindings` availability and timestamp.
+- CORS per Environment: Allow only staging/prod origins in respective env configs; permissive (`*`) in local dev.
+- Rate Limiting: Apply CF Firewall or Worker logic on write route(s) initially.
 
 ## 11) Testing Strategy
 - Unit: Validators, error wrappers, query param parsing.
 - Integration: Miniflare/Wrangler dev tests for each route with success/failure paths.
 - Contract: Example error payloads verified; CORS headers present for all responses (incl. errors).
+- Health: CI smoke test calls `/api/health` and asserts `ok: true` and bindings flags.
 
 ## 12) Deployment & Environments
 - Dev: `wrangler dev` with local D1; bind Vectorize to prod for testing if needed (flagged).
@@ -137,4 +151,3 @@ Base: `/api`
 - Pagination and total counts for list and search.
 - AuthN/Z, quotas, and per‑tenant isolation.
 - Background jobs for re‑embedding or model migration.
-

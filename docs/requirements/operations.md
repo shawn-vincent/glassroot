@@ -59,6 +59,10 @@ Principles: Simplicity > elegance > normality > robustness > performance > funct
      - Steps: install → typecheck/lint → build client web → deploy API to Workers (staging env) → deploy web to Cloudflare Pages (staging project).
   2) `production.yml` (trigger: push to `main` or `v*` tag)
      - Steps: install → typecheck/lint → build client web → apply D1 migrations → deploy API to Workers (prod env) → deploy web to Pages (prod project).
+ - Guardrails:
+   - Require `check` job (typecheck + lint) to pass before deploy jobs run.
+   - Protect `main` with required reviews and passing checks.
+   - Staging deploy runs on `develop` push; production deploy runs only on tagged releases or approved merges to `main`.
 - Required CI secrets:
   - `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`.
   - `PAGES_PROJECT_NAME_STAGING`, `PAGES_PROJECT_NAME_PROD` (if distinct), or reuse with env aliases.
@@ -74,12 +78,14 @@ Principles: Simplicity > elegance > normality > robustness > performance > funct
 - Migrate D1 (prod only or when schema changes): `wrangler d1 execute <DB> --file api/schema.sql`.
 - Deploy API: `npm run api:deploy` with `--env staging|production` as needed.
 - Deploy Web: `wrangler pages deploy client/dist/web --project-name <project> --branch <env-branch>` or use Pages Git integration.
+ - Health Check: Post-deploy step hits `/api/health` and asserts `{ ok: true }`.
 
 ## 7) Database & Vector Index Operations
 - D1 schema management:
   - Source of truth: `api/schema.sql`.
-  - Apply in staging before production; ensure idempotency or version migrations (consider adopting Wrangler migrations or Drizzle in future).
+  - Apply in staging before production automatically; ensure idempotency or version migrations (consider adopting Wrangler migrations or Drizzle in future).
   - Backup schedule: nightly export to R2 or external storage (manual/cron), retain 7–30 days.
+  - Restore runbook: identify backup snapshot → import into staging D1 → verify → promote to prod during outage window if needed.
 - Vectorize index management:
   - Separate indices per environment.
   - Monitor vector count growth and quotas; document index recreation steps if model changes.
@@ -94,6 +100,8 @@ Principles: Simplicity > elegance > normality > robustness > performance > funct
 - Alerts:
   - Uptime monitors on API and Web (e.g., UptimeRobot) for 5‑minute checks.
   - Error rate alert thresholds (Sentry or custom) for sudden spikes.
+ - Correlation IDs:
+   - Worker generates a UUID per request; included in responses and logs for traceability.
 
 ## 9) CORS, Security, and Rate Limiting
 - CORS:
@@ -101,6 +109,7 @@ Principles: Simplicity > elegance > normality > robustness > performance > funct
   - Prod: allow prod web origin(s) only.
 - Rate limiting:
   - Cloudflare Firewall rules per route IP throttle (low effort), refined later.
+  - Initial: throttle POST `/api/documents` to ~60 rpm per IP in prod; log 429s.
 - Headers:
   - Add security headers on the web site (Pages) and consider minimal headers on API (e.g., `X-Content-Type-Options: nosniff`).
 - Secrets hygiene:
@@ -130,6 +139,7 @@ Principles: Simplicity > elegance > normality > robustness > performance > funct
 - `npm run dev` to launch web and API locally.
 - Configure Cloudflare account locally if needed (`wrangler login`).
 - For native testing, set up iOS/Android tooling per Expo docs.
+ - First success: open localhost app, create a document, run a search, verify `/api/health` returns `{ ok: true }`.
 
 ## 13) Operational Runbooks (Quick Recipes)
 - Recreate D1 schema (staging):
@@ -140,6 +150,8 @@ Principles: Simplicity > elegance > normality > robustness > performance > funct
   - Branch `hotfix/*` from `main`, PR into `main`, CI deploys to prod; cherry‑pick into `develop`.
 - Tail logs in prod:
   - `wrangler tail --env production` in `api/`.
+ - Toggle feature flags:
+   - Use environment variables (Pages/Workers) to enable/disable streaming/snippets/proxy; document default states.
 
 ## 14) Performance & Capacity Planning (Lightweight)
 - Targets:
@@ -154,4 +166,3 @@ Principles: Simplicity > elegance > normality > robustness > performance > funct
 - Add per‑route rate limits and API keys when opening to third‑party clients.
 - Automated daily D1 exports to R2 with lifecycle rules.
 - Add tracing (OpenTelemetry) if complexity grows.
-
