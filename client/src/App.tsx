@@ -3,16 +3,16 @@ import ConfigPanel from './components/ConfigPanel'
 import OfflineIndicator from './components/OfflineIndicator'
 import ErrorToaster from './components/ErrorToaster'
 import { useEffect, useState } from 'react'
-import { Sun, Moon, Monitor, Settings } from 'lucide-react'
+import { Sun, Moon, Settings } from 'lucide-react'
 
 export default function App() {
   const [showConfig, setShowConfig] = useState(false)
   const { pathname } = useLocation()
   // Apply persisted theme at app mount to avoid mismatch
   useEffect(() => {
-    const saved = localStorage.getItem('theme') || 'auto'
-    if (saved === 'auto') document.documentElement.removeAttribute('data-theme')
-    else document.documentElement.setAttribute('data-theme', saved)
+    const saved = localStorage.getItem('theme')
+    const theme = saved === 'dark' ? 'dark' : 'light'
+    document.documentElement.setAttribute('data-theme', theme)
   }, [])
   return (
     <div className="app">
@@ -41,40 +41,28 @@ export default function App() {
 }
 
 function ThemeToggle() {
-  const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'auto')
+  const [theme, setTheme] = useState(() => {
+    const saved = localStorage.getItem('theme')
+    return saved === 'dark' ? 'dark' : 'light'
+  })
   
   useEffect(() => {
-    if (theme === 'auto') {
-      document.documentElement.removeAttribute('data-theme')
-    } else {
-      document.documentElement.setAttribute('data-theme', theme)
-    }
+    document.documentElement.setAttribute('data-theme', theme)
     localStorage.setItem('theme', theme)
   }, [theme])
   
-  const cycleTheme = () => {
-    const themes = ['auto', 'light', 'dark']
-    const currentIndex = themes.indexOf(theme)
-    const nextTheme = themes[(currentIndex + 1) % themes.length]
-    setTheme(nextTheme)
-  }
-  
-  const getThemeIcon = () => {
-    switch (theme) {
-      case 'light': return <Sun size={18} />
-      case 'dark': return <Moon size={18} />
-      default: return <Monitor size={18} />
-    }
+  const toggleTheme = () => {
+    setTheme(prev => prev === 'light' ? 'dark' : 'light')
   }
   
   return (
     <button 
       type="button" 
-      onClick={cycleTheme}
+      onClick={toggleTheme}
       className="icon-button theme-toggle"
-      title={`Theme: ${theme}`}
+      title={`Switch to ${theme === 'light' ? 'dark' : 'light'} theme`}
     >
-      {getThemeIcon()}
+      {theme === 'light' ? <Sun size={18} /> : <Moon size={18} />}
     </button>
   )
 }

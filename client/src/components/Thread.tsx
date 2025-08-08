@@ -4,14 +4,14 @@ import {
 	ThreadPrimitive,
 	useThread,
 } from "@assistant-ui/react";
-import { Bot, Send, User } from "lucide-react";
+import { Bot, Send, User, ArrowDown } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
 export function Thread({ className }: { className?: string }) {
 	return (
-		<ThreadPrimitive.Root className={className}>
-			<ThreadPrimitive.Viewport className="flex-1 overflow-auto p-4 space-y-4">
+		<ThreadPrimitive.Root className={`flex flex-col ${className || ''}`}>
+			<ThreadPrimitive.Viewport className="flex-1 overflow-auto p-4">
 				<ThreadPrimitive.Empty>
 					<div className="flex flex-col items-center justify-center h-full text-center space-y-4">
 						<Bot size={48} className="text-muted-foreground" />
@@ -24,12 +24,22 @@ export function Thread({ className }: { className?: string }) {
 					</div>
 				</ThreadPrimitive.Empty>
 
-				<ThreadPrimitive.Messages
-					components={{
-						UserMessage: UserMessage,
-						AssistantMessage: AssistantMessage,
-					}}
-				/>
+				<div className="space-y-4">
+					<ThreadPrimitive.Messages
+						components={{
+							UserMessage: UserMessage,
+							AssistantMessage: AssistantMessage,
+						}}
+					/>
+				</div>
+
+				<ThreadPrimitive.If empty={false}>
+					<div className="h-4" />
+				</ThreadPrimitive.If>
+
+				<div className="flex justify-center pb-4">
+					<ThreadScrollToBottom />
+				</div>
 			</ThreadPrimitive.Viewport>
 
 			<div className="border-t p-4">
@@ -91,6 +101,20 @@ function MessageText() {
 				),
 			}}
 		/>
+	);
+}
+
+function ThreadScrollToBottom() {
+	return (
+		<ThreadPrimitive.ScrollToBottom asChild>
+			<button
+				type="button"
+				className="icon-button p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
+				title="Scroll to bottom"
+			>
+				<ArrowDown size={16} />
+			</button>
+		</ThreadPrimitive.ScrollToBottom>
 	);
 }
 
