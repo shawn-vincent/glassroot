@@ -1,4 +1,4 @@
-# Zhenren Client — Requirements & Technical Design
+# Glassroot Client — Requirements & Technical Design
 
 ## 1) Goals & Principles
 - Simplicity > elegance > normality > robustness > performance > functionality.

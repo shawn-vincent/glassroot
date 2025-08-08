@@ -1,4 +1,4 @@
-# Zhenren API — Requirements & Technical Design
+# Glassroot API — Requirements & Technical Design
 
 ## 1) Overview
 - Purpose: Provide minimal, reliable endpoints for document storage and semantic search.

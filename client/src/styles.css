@@ -1,0 +1,54 @@
+:root {
+  --bg: #0b0c0e;
+  --fg: #e7e7ea;
+  --muted: #9aa0a6;
+  --accent: #6ea8fe;
+  color-scheme: dark light;
+}
+
+[data-theme="light"] {
+  --bg: #ffffff;
+  --fg: #16181d;
+  --muted: #5f6b7a;
+  --accent: #375dfb;
+}
+
+body { margin: 0; background: var(--bg); color: var(--fg); font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, Noto Sans, "Apple Color Emoji", "Segoe UI Emoji"; }
+.app { min-height: 100dvh; display: flex; flex-direction: column; }
+.topbar { display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 1rem; border-bottom: 1px solid #2b2f36; position: sticky; top: 0; background: var(--bg); }
+.nav { display: flex; gap: 1rem; }
+.nav a { color: var(--muted); text-decoration: none; }
+.nav a.active { color: var(--fg); font-weight: 600; }
+.actions { display: flex; gap: 0.5rem; align-items: center; }
+.content { padding: 1rem; max-width: 960px; width: 100%; margin: 0 auto; flex: 1; display: flex; flex-direction: column; min-height: 0; }
+.content.fullbleed { max-width: none; padding: 0; }
+
+button, input, select, textarea { background: transparent; color: var(--fg); border: 1px solid #3a3f46; border-radius: 6px; padding: 0.5rem 0.6rem; }
+button { cursor: pointer; }
+label { display: block; margin-top: 0.75rem; margin-bottom: 0.25rem; color: var(--muted); }
+.row { display: flex; gap: 0.5rem; align-items: center; }
+.error { color: #ff6b6b; border: 1px solid #ff6b6b55; background: #ff6b6b10; padding: 0.5rem 0.75rem; border-radius: 6px; }
+.muted { color: var(--muted); }
+.list { display: grid; gap: 0.5rem; }
+.card { border: 1px solid #2b2f36; border-radius: 8px; padding: 0.75rem; }
+
+.sheet { position: fixed; inset: 0; background: #0006; display: grid; place-items: center; }
+.panel { background: var(--bg); border: 1px solid #2b2f36; border-radius: 10px; width: min(720px, 95vw); max-height: 80vh; overflow: auto; padding: 1rem; }
+.panel header { display: flex; align-items: center; justify-content: space-between; }
+.panel .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+
+.offline { background: #e6b80022; border: 1px solid #e6b80055; color: #ffd24d; padding: 0.5rem 0.75rem; text-align: center; }
+
+.chatbox { border: 1px solid #2b2f36; border-radius: 10px; padding: 0.75rem; }
+.messages { display: grid; gap: 0.5rem; max-height: 360px; overflow: auto; padding: 0.25rem; }
+.bubble { max-width: 70%; padding: 0.5rem 0.75rem; border-radius: 12px; white-space: pre-wrap; }
+.bubble.in { background: #1f232b; border: 1px solid #2b2f36; }
+.bubble.out { background: #2b4c98; border: 1px solid #2b4c98; margin-left: auto; }
+
+/* Normalize Markdown inside chat bubbles */
+.markdown { line-height: 1.4; }
+.markdown p { margin: 0 0 .5rem 0; }
+.markdown p:last-child { margin-bottom: 0; }
+.markdown ul, .markdown ol { margin: 0 0 .5rem 1.25rem; padding: 0; }
+.markdown pre { margin: 0 0 .5rem 0; padding: .5rem; background: #11161b; border: 1px solid #2b2f36; border-radius: 8px; overflow: auto; }
+.markdown code { background: #11161b; border: 1px solid #2b2f36; border-radius: 6px; padding: 0 .25rem; }

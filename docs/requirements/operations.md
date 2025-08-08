@@ -1,4 +1,4 @@
-# Zhenren Operations — Requirements & Technical Design
+# Glassroot Operations — Requirements & Technical Design
 
 ## 1) Operational Goals
 - Great DX: fast local setup, one‑command dev, tight feedback loops.
@@ -31,8 +31,8 @@ Principles: Simplicity > elegance > normality > robustness > performance > funct
   - Cloudflare API Token (CI secret) for deployments.
   - Cloudflare account, zone identifiers where required.
   - Worker bindings per environment:
-    - D1: `DB` (staging `zhenren-staging`, prod `zhenren`).
-    - Vectorize: `VECTORS` (staging `zhenren-vectors-staging`, prod `zhenren-vectors`).
+    - D1: `DB` (staging `glassroot-staging`, prod `glassroot`).
+    - Vectorize: `VECTORS` (staging `glassroot-vectors-staging`, prod `glassroot-vectors`).
     - AI: `AI` (present in both envs).
 - Client runtime config:
   - Web base URL for API per environment (Pages env variables or build‑time .env).
