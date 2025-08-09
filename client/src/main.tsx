@@ -15,19 +15,31 @@ import Home from "./pages/Home";
 import Search from "./pages/Search";
 import "./styles.css";
 
-const router = createBrowserRouter([
+const router = createBrowserRouter(
+	[
+		{
+			path: "/",
+			element: <App />,
+			children: [
+				{ index: true, element: <Home /> },
+				{ path: "documents", element: <Documents /> },
+				{ path: "documents/new", element: <DocumentNew /> },
+				{ path: "documents/:id", element: <DocumentView /> },
+				{ path: "search", element: <Search /> },
+			],
+		},
+	],
 	{
-		path: "/",
-		element: <App />,
-		children: [
-			{ index: true, element: <Home /> },
-			{ path: "documents", element: <Documents /> },
-			{ path: "documents/new", element: <DocumentNew /> },
-			{ path: "documents/:id", element: <DocumentView /> },
-			{ path: "search", element: <Search /> },
-		],
+		future: {
+			v7_startTransition: true,
+			v7_relativeSplatPath: true,
+			v7_fetcherPersist: true,
+			v7_normalizeFormMethod: true,
+			v7_partialHydration: true,
+			v7_skipActionErrorRevalidation: true,
+		},
 	},
-]);
+);
 
 import { pushError } from "./lib/errors";
 

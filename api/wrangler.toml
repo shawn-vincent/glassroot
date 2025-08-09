@@ -14,7 +14,6 @@ database_id = "${D1_DATABASE_ID}"
 [[vectorize]]
 binding = "VECTORS"
 index_name = "glassroot-vectors"
-index_id = "${VECTORIZE_INDEX_ID}"
 
 [ai]
 binding = "AI"

@@ -3,7 +3,7 @@
 	"private": true,
 	"workspaces": ["api", "client"],
 	"scripts": {
-		"dev": "concurrently \"npm:dev:api\" \"npm:dev:client\"",
+		"dev": "concurrently --names \"API,WEB\" --prefix-colors \"cyan,magenta\" \"npm:dev:api\" \"npm:dev:client\"",
 		"dev:api": "npm --workspace api run dev",
 		"dev:client": "npm --workspace client run dev",
 		"build": "npm -w api run build && npm -w client run build",

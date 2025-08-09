@@ -38,44 +38,39 @@ export default function ConfigPanel({ onClose }: Props) {
 	return (
 		<Sheet open={true} onOpenChange={(open) => !open && onClose()}>
 			<SheetContent className="w-[720px] max-w-[95vw] overflow-y-auto">
-				<SheetHeader>
+				<SheetHeader className="px-6 pt-6">
 					<SheetTitle>Configuration</SheetTitle>
-					<SheetDescription>
-						Configure your OpenRouter settings and system prompt
-					</SheetDescription>
 				</SheetHeader>
-				<div className="grid grid-cols-2 gap-6 py-4">
-					<div className="space-y-4">
-						<div className="space-y-2">
-							<Label htmlFor="cfg_api_key">OpenRouter API Key</Label>
-							<div className="flex gap-2">
-								<Input
-									id="cfg_api_key"
-									type={show ? "text" : "password"}
-									value={apiKey}
-									onChange={(e) => setApiKey(e.target.value)}
-									placeholder="sk-or-..."
-								/>
-								<Button
-									variant="outline"
-									size="icon"
-									onClick={() => setShow((s) => !s)}
-								>
-									{show ? <EyeOff size={16} /> : <Eye size={16} />}
-								</Button>
-							</div>
+				<div className="space-y-6 p-6">
+					<div className="space-y-2">
+						<Label htmlFor="cfg_api_key">OpenRouter API Key</Label>
+						<div className="flex gap-2">
+							<Input
+								id="cfg_api_key"
+								type={show ? "text" : "password"}
+								value={apiKey}
+								onChange={(e) => setApiKey(e.target.value)}
+								placeholder="sk-or-..."
+							/>
+							<Button
+								variant="outline"
+								size="icon"
+								onClick={() => setShow((s) => !s)}
+							>
+								{show ? <EyeOff size={16} /> : <Eye size={16} />}
+							</Button>
 						</div>
-						<div className="space-y-2">
-							<Label htmlFor="cfg_model">Model</Label>
-							<ModelPicker value={model} onChange={setModel} />
-						</div>
+					</div>
+					<div className="space-y-2">
+						<Label htmlFor="cfg_model">Model</Label>
+						<ModelPicker value={model} onChange={setModel} />
 					</div>
 					<div className="space-y-2">
 						<Label htmlFor="cfg_prompt">System Prompt (Markdown)</Label>
 						<PromptEditor value={prompt} onChange={setPrompt} />
 					</div>
 				</div>
-				<SheetFooter>
+				<SheetFooter className="px-6 pb-6">
 					<Button onClick={save}>Save Settings</Button>
 				</SheetFooter>
 			</SheetContent>

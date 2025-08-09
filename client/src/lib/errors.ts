@@ -1,3 +1,5 @@
+import { toast } from "sonner";
+
 type Listener = (msg: string) => void;
 
 const listeners = new Set<Listener>();
@@ -24,4 +26,8 @@ export function pushError(error: unknown) {
 					: String(error);
 	} else if (error instanceof Error) message = error.message;
 	for (const l of listeners) l(message);
+	// Show error using sonner toast
+	toast.error(message, {
+		duration: 6000,
+	});
 }

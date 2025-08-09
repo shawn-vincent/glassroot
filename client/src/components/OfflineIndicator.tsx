@@ -1,3 +1,5 @@
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { WifiOff } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export default function OfflineIndicator() {
@@ -14,8 +16,11 @@ export default function OfflineIndicator() {
 	}, []);
 	if (online) return null;
 	return (
-		<div className="bg-warning/10 border border-warning/30 text-warning px-3 py-2 text-center">
-			You are offline. Network actions disabled.
-		</div>
+		<Alert variant="destructive" className="rounded-none border-x-0 border-t-0">
+			<WifiOff className="h-4 w-4" />
+			<AlertDescription>
+				You are offline. Network actions disabled.
+			</AlertDescription>
+		</Alert>
 	);
 }

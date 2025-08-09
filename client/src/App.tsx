@@ -4,8 +4,8 @@ import { Moon, Settings, Sun } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import ConfigPanel from "./components/ConfigPanel";
-import ErrorToaster from "./components/ErrorToaster";
 import OfflineIndicator from "./components/OfflineIndicator";
+import { Toaster } from "./components/ui/sonner";
 
 export default function App() {
 	const [showConfig, setShowConfig] = useState(false);
@@ -56,19 +56,19 @@ export default function App() {
 					</Link>
 				</nav>
 				<div className="flex gap-2 items-center">
-					<Button
-						variant="outline"
-						size="sm"
-						onClick={() => setShowConfig(true)}
-					>
-						<Settings size={18} className="mr-1.5" />
-						Config
-					</Button>
 					<ThemeToggle />
+					<Button
+						variant="ghost"
+						size="icon"
+						onClick={() => setShowConfig(true)}
+						aria-label="Settings"
+					>
+						<Settings size={20} />
+					</Button>
 				</div>
 			</header>
 			<OfflineIndicator />
-			<ErrorToaster />
+			<Toaster richColors position="bottom-right" />
 			<main
 				className={
 					pathname === "/"
