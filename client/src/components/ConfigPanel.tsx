@@ -37,13 +37,14 @@ export default function ConfigPanel({ onClose }: Props) {
 
 	return (
 		<Sheet open={true} onOpenChange={(open) => !open && onClose()}>
-			<SheetContent className="w-[720px] max-w-[95vw] overflow-y-auto">
-				<SheetHeader className="px-6 pt-6">
+			<SheetContent className="w-[720px] max-w-[95vw] flex flex-col overflow-hidden">
+				<SheetHeader className="px-6 pt-6 flex-shrink-0">
 					<SheetTitle>Configuration</SheetTitle>
 				</SheetHeader>
-				<div className="space-y-6 p-6">
-					<div className="space-y-2">
-						<Label htmlFor="cfg_api_key">OpenRouter API Key</Label>
+				<div className="flex-1 overflow-y-auto px-6">
+					<div className="space-y-6 py-6">
+						<div className="space-y-2">
+							<Label htmlFor="cfg_api_key">OpenRouter API Key</Label>
 						<div className="flex gap-2">
 							<Input
 								id="cfg_api_key"
@@ -78,17 +79,18 @@ export default function ConfigPanel({ onClose }: Props) {
 								API key should start with "sk-or-"
 							</p>
 						)}
-					</div>
-					<div className="space-y-2">
-						<Label htmlFor="cfg_model">Model</Label>
-						<ModelPicker value={model} onChange={setModel} />
-					</div>
-					<div className="space-y-2">
-						<Label htmlFor="cfg_prompt">System Prompt (Markdown)</Label>
-						<PromptEditor value={prompt} onChange={setPrompt} />
+						</div>
+						<div className="space-y-2">
+							<Label htmlFor="cfg_model">Model</Label>
+							<ModelPicker value={model} onChange={setModel} />
+						</div>
+						<div className="space-y-2">
+							<Label htmlFor="cfg_prompt">System Prompt (Markdown)</Label>
+							<PromptEditor value={prompt} onChange={setPrompt} />
+						</div>
 					</div>
 				</div>
-				<SheetFooter className="px-6 pb-6">
+				<SheetFooter className="px-6 pb-6 flex-shrink-0">
 					<Button onClick={save}>Save Settings</Button>
 				</SheetFooter>
 			</SheetContent>
