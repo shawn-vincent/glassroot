@@ -41,7 +41,6 @@ export default function Search() {
 
 	return (
 		<div className="space-y-4">
-			<h2 className="text-2xl font-semibold">Search</h2>
 			<div className="space-y-2">
 				<Label htmlFor="search_query">Query</Label>
 				<Input

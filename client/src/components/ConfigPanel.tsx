@@ -57,7 +57,7 @@ export default function ConfigPanel({ onClose }: Props) {
 								size="icon"
 								onClick={() => setShow((s) => !s)}
 							>
-								{show ? <EyeOff size={16} /> : <Eye size={16} />}
+								{show ? <EyeOff size={20} /> : <Eye size={20} />}
 							</Button>
 						</div>
 						{!apiKey && (

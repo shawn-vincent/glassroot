@@ -24,7 +24,7 @@ export default function Documents() {
 	return (
 		<div className="space-y-4">
 			<div className="flex items-center justify-between">
-				<h2 className="text-2xl font-semibold">Documents</h2>
+				<div />
 				<Link to="/documents/new">
 					<Button>New Document</Button>
 				</Link>

@@ -22,7 +22,7 @@ export default function App() {
 	}, []);
 	return (
 		<div className="h-full flex flex-col">
-			<header className="flex items-center justify-between px-4 py-3 border-b border-border sticky top-0 bg-background z-10">
+			<header className="flex items-center justify-between px-4 py-3 md:py-3 border-b border-border sticky top-0 bg-background z-10 pt-safe">
 				<nav className="flex gap-4">
 					<Link
 						to="/"
@@ -63,7 +63,7 @@ export default function App() {
 						onClick={() => setShowConfig(true)}
 						aria-label="Settings"
 					>
-						<Settings size={20} />
+						<Settings size={24} />
 					</Button>
 				</div>
 			</header>
@@ -109,7 +109,7 @@ function ThemeToggle() {
 			onClick={toggleTheme}
 			title={`Switch to ${theme === "light" ? "dark" : "light"} theme`}
 		>
-			{theme === "light" ? <Sun size={18} /> : <Moon size={18} />}
+			{theme === "light" ? <Sun size={20} /> : <Moon size={20} />}
 		</Button>
 	);
 }
