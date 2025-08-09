@@ -1,22 +1,19 @@
 {
-  "name": "glassroot",
-  "private": true,
-  "workspaces": [
-    "api",
-    "client"
-  ],
-  "scripts": {
-    "dev": "concurrently \"npm:dev:api\" \"npm:dev:client\"",
-    "dev:api": "npm --workspace api run dev",
-    "dev:client": "npm --workspace client run dev",
-    "build": "npm -w api run build && npm -w client run build",
-    "typecheck": "npm -w api exec tsc --noEmit && npm -w client exec tsc --noEmit",
-    "lint": "biome lint --reporter summary .",
-    "format": "biome format .",
-    "check": "npm run typecheck && npm run lint"
-  },
-  "devDependencies": {
-    "concurrently": "^9.0.1",
-    "@biomejs/biome": "^1.8.3"
-  }
+	"name": "glassroot",
+	"private": true,
+	"workspaces": ["api", "client"],
+	"scripts": {
+		"dev": "concurrently \"npm:dev:api\" \"npm:dev:client\"",
+		"dev:api": "npm --workspace api run dev",
+		"dev:client": "npm --workspace client run dev",
+		"build": "npm -w api run build && npm -w client run build",
+		"typecheck": "npm -w api exec tsc --noEmit && npm -w client exec tsc --noEmit",
+		"lint": "biome lint --reporter summary .",
+		"format": "biome format .",
+		"check": "npm run typecheck && npm run lint"
+	},
+	"devDependencies": {
+		"concurrently": "^9.0.1",
+		"@biomejs/biome": "^1.8.3"
+	}
 }

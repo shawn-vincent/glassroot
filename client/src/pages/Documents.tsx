@@ -1,39 +1,72 @@
-import { Link } from 'react-router-dom'
-import { useQuery } from '@tanstack/react-query'
-import { api } from '../lib/api'
-import ErrorBlock from '../components/ErrorBlock'
+import { Button } from "@/components/ui/button";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
+import { useQuery } from "@tanstack/react-query";
+import { Link } from "react-router-dom";
+import ErrorBlock from "../components/ErrorBlock";
+import { api } from "../lib/api";
 
 export default function Documents() {
-  const { data, error, isLoading, isStale, dataUpdatedAt } = useQuery({
-    queryKey: ['documents'],
-    queryFn: () => api<{ documents: { id: string; title: string; created: number }[] }>("/api/documents"),
-    staleTime: 60_000,
-  })
+	const { data, error, isLoading, isStale, dataUpdatedAt } = useQuery({
+		queryKey: ["documents"],
+		queryFn: () =>
+			api<{ documents: { id: string; title: string; created: number }[] }>(
+				"/api/documents",
+			),
+		staleTime: 60_000,
+	});
 
-  return (
-    <div>
-      <div className="row" style={{justifyContent:'space-between'}}>
-        <h2>Documents</h2>
-        <Link to="/documents/new"><button type="button">New</button></Link>
-      </div>
-      <div className="row" style={{justifyContent:'space-between'}}>
-        {isLoading ? <div className="muted">Loading…</div> : <div className="muted">Last updated {dataUpdatedAt ? new Date(dataUpdatedAt).toLocaleTimeString() : '—'} {isStale && '(stale)'}</div>}
-        <button type="button" onClick={() => window.location.reload()}>Refresh</button>
-      </div>
-      {error && <ErrorBlock error={error} />}
-      <div className="list" style={{marginTop: '.5rem'}}>
-        {data?.documents?.map((d) => (
-          <div key={d.id} className="card">
-            <div style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
-              <div>
-                <div><Link to={`/documents/${d.id}`}>{d.title}</Link></div>
-                <div className="muted" style={{fontSize: '.9em'}}>Created {new Date((d.created||0)*1000).toLocaleString()}</div>
-              </div>
-              <Link to={`/documents/${d.id}`}><button type="button">Open</button></Link>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  )
+	return (
+		<div className="space-y-4">
+			<div className="flex items-center justify-between">
+				<h2 className="text-2xl font-semibold">Documents</h2>
+				<Link to="/documents/new">
+					<Button>New Document</Button>
+				</Link>
+			</div>
+			<div className="flex items-center justify-between">
+				{isLoading ? (
+					<div className="text-muted-foreground">Loading…</div>
+				) : (
+					<div className="text-sm text-muted-foreground">
+						Last updated{" "}
+						{dataUpdatedAt ? new Date(dataUpdatedAt).toLocaleTimeString() : "—"}{" "}
+						{isStale && "(stale)"}
+					</div>
+				)}
+				<Button variant="outline" onClick={() => window.location.reload()}>
+					Refresh
+				</Button>
+			</div>
+			{error && <ErrorBlock error={error} />}
+			<div className="grid gap-3">
+				{data?.documents?.map((d) => (
+					<Card key={d.id}>
+						<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+							<div className="space-y-1">
+								<CardTitle>
+									<Link to={`/documents/${d.id}`} className="hover:underline">
+										{d.title}
+									</Link>
+								</CardTitle>
+								<CardDescription>
+									Created {new Date((d.created || 0) * 1000).toLocaleString()}
+								</CardDescription>
+							</div>
+							<Link to={`/documents/${d.id}`}>
+								<Button variant="secondary" size="sm">
+									Open
+								</Button>
+							</Link>
+						</CardHeader>
+					</Card>
+				))}
+			</div>
+		</div>
+	);
 }

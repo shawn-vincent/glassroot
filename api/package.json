@@ -1,17 +1,17 @@
 {
-  "name": "glassroot-api",
-  "private": true,
-  "type": "module",
-  "scripts": {
-    "dev": "wrangler dev",
-    "build": "wrangler build"
-  },
-  "devDependencies": {
-    "@cloudflare/workers-types": "^4.20240729.0",
-    "typescript": "^5.5.4",
-    "wrangler": "^3.67.0"
-  },
-  "dependencies": {
-    "zod": "^3.23.8"
-  }
+	"name": "glassroot-api",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"dev": "wrangler dev",
+		"build": "wrangler build"
+	},
+	"devDependencies": {
+		"@cloudflare/workers-types": "^4.20240729.0",
+		"typescript": "^5.5.4",
+		"wrangler": "^3.67.0"
+	},
+	"dependencies": {
+		"zod": "^3.23.8"
+	}
 }

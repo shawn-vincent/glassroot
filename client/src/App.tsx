@@ -1,68 +1,115 @@
-import { Link, Outlet, useLocation } from 'react-router-dom'
-import ConfigPanel from './components/ConfigPanel'
-import OfflineIndicator from './components/OfflineIndicator'
-import ErrorToaster from './components/ErrorToaster'
-import { useEffect, useState } from 'react'
-import { Sun, Moon, Settings } from 'lucide-react'
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { Moon, Settings, Sun } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Link, Outlet, useLocation } from "react-router-dom";
+import ConfigPanel from "./components/ConfigPanel";
+import ErrorToaster from "./components/ErrorToaster";
+import OfflineIndicator from "./components/OfflineIndicator";
 
 export default function App() {
-  const [showConfig, setShowConfig] = useState(false)
-  const { pathname } = useLocation()
-  // Apply persisted theme at app mount to avoid mismatch
-  useEffect(() => {
-    const saved = localStorage.getItem('theme')
-    const theme = saved === 'dark' ? 'dark' : 'light'
-    document.documentElement.setAttribute('data-theme', theme)
-  }, [])
-  return (
-    <div className="app">
-      <header className="topbar">
-        <nav className="nav">
-          <Link to="/" className={pathname === '/' ? 'active' : ''}>Home</Link>
-          <Link to="/documents" className={pathname.startsWith('/documents') ? 'active' : ''}>Documents</Link>
-          <Link to="/search" className={pathname.startsWith('/search') ? 'active' : ''}>Search</Link>
-        </nav>
-        <div className="actions">
-          <button type="button" onClick={() => setShowConfig(true)} className="icon-button">
-            <Settings size={18} />
-            Config
-          </button>
-          <ThemeToggle />
-        </div>
-      </header>
-      <OfflineIndicator />
-      <ErrorToaster />
-      <main className={`content ${pathname === '/' ? 'fullbleed' : ''}`}>
-        <Outlet />
-      </main>
-      {showConfig && <ConfigPanel onClose={() => setShowConfig(false)} />}
-    </div>
-  )
+	const [showConfig, setShowConfig] = useState(false);
+	const { pathname } = useLocation();
+	// Apply persisted theme at app mount to avoid mismatch
+	useEffect(() => {
+		const saved = localStorage.getItem("theme");
+		const theme = saved === "dark" ? "dark" : "light";
+		if (theme === "dark") {
+			document.documentElement.classList.add("dark");
+		} else {
+			document.documentElement.classList.remove("dark");
+		}
+	}, []);
+	return (
+		<div className="min-h-screen flex flex-col">
+			<header className="flex items-center justify-between px-4 py-3 border-b border-border sticky top-0 bg-background z-10">
+				<nav className="flex gap-4">
+					<Link
+						to="/"
+						className={
+							pathname === "/"
+								? "text-foreground font-semibold"
+								: "text-muted no-underline"
+						}
+					>
+						Home
+					</Link>
+					<Link
+						to="/documents"
+						className={
+							pathname.startsWith("/documents")
+								? "text-foreground font-semibold"
+								: "text-muted no-underline"
+						}
+					>
+						Documents
+					</Link>
+					<Link
+						to="/search"
+						className={
+							pathname.startsWith("/search")
+								? "text-foreground font-semibold"
+								: "text-muted no-underline"
+						}
+					>
+						Search
+					</Link>
+				</nav>
+				<div className="flex gap-2 items-center">
+					<Button
+						variant="outline"
+						size="sm"
+						onClick={() => setShowConfig(true)}
+					>
+						<Settings size={18} className="mr-1.5" />
+						Config
+					</Button>
+					<ThemeToggle />
+				</div>
+			</header>
+			<OfflineIndicator />
+			<ErrorToaster />
+			<main
+				className={
+					pathname === "/"
+						? "flex-1 flex flex-col min-h-0"
+						: "p-4 max-w-[960px] w-full mx-auto flex-1 flex flex-col min-h-0"
+				}
+			>
+				<Outlet />
+			</main>
+			{showConfig && <ConfigPanel onClose={() => setShowConfig(false)} />}
+		</div>
+	);
 }
 
 function ThemeToggle() {
-  const [theme, setTheme] = useState(() => {
-    const saved = localStorage.getItem('theme')
-    return saved === 'dark' ? 'dark' : 'light'
-  })
-  
-  useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme)
-    localStorage.setItem('theme', theme)
-  }, [theme])
-  
-  const toggleTheme = () => {
-    setTheme(prev => prev === 'light' ? 'dark' : 'light')
-  }
-  
-  return (
-    <button 
-      type="button" 
-      onClick={toggleTheme}
-      className="icon-button theme-toggle"
-      title={`Switch to ${theme === 'light' ? 'dark' : 'light'} theme`}
-    >
-      {theme === 'light' ? <Sun size={18} /> : <Moon size={18} />}
-    </button>
-  )
+	const [theme, setTheme] = useState(() => {
+		const saved = localStorage.getItem("theme");
+		return saved === "dark" ? "dark" : "light";
+	});
+
+	useEffect(() => {
+		if (theme === "dark") {
+			document.documentElement.classList.add("dark");
+		} else {
+			document.documentElement.classList.remove("dark");
+		}
+		localStorage.setItem("theme", theme);
+	}, [theme]);
+
+	const toggleTheme = () => {
+		setTheme((prev) => (prev === "light" ? "dark" : "light"));
+	};
+
+	return (
+		<Button
+			variant="outline"
+			size="icon"
+			onClick={toggleTheme}
+			title={`Switch to ${theme === "light" ? "dark" : "light"} theme`}
+		>
+			{theme === "light" ? <Sun size={18} /> : <Moon size={18} />}
+		</Button>
+	);
 }

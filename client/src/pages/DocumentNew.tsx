@@ -1,47 +1,77 @@
-import { useState } from 'react'
-import { z } from 'zod'
-import { api } from '../lib/api'
-import ErrorBlock from '../components/ErrorBlock'
-import { useNavigate } from 'react-router-dom'
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { z } from "zod";
+import ErrorBlock from "../components/ErrorBlock";
+import { api } from "../lib/api";
 
-const Schema = z.object({ title: z.string().trim().min(1), content: z.string().trim().min(1) })
+const Schema = z.object({
+	title: z.string().trim().min(1),
+	content: z.string().trim().min(1),
+});
 
 export default function DocumentNew() {
-  const [title, setTitle] = useState('')
-  const [content, setContent] = useState('')
-  const [error, setError] = useState<unknown>(null)
-  const [loading, setLoading] = useState(false)
-  const nav = useNavigate()
+	const [title, setTitle] = useState("");
+	const [content, setContent] = useState("");
+	const [error, setError] = useState<unknown>(null);
+	const [loading, setLoading] = useState(false);
+	const nav = useNavigate();
 
-  async function create() {
-    setError(null)
-    const parsed = Schema.safeParse({ title, content })
-    if (!parsed.success) { setError(parsed.error); return }
-    setLoading(true)
-    try {
-      const res = await api<{ id: string; title: string; content: string }>("/api/documents", {
-        method: 'POST',
-        body: JSON.stringify(parsed.data)
-      })
-      nav(`/documents/${res.id}`)
-    } catch (e) {
-      setError(e)
-    } finally {
-      setLoading(false)
-    }
-  }
+	async function create() {
+		setError(null);
+		const parsed = Schema.safeParse({ title, content });
+		if (!parsed.success) {
+			setError(parsed.error);
+			return;
+		}
+		setLoading(true);
+		try {
+			const res = await api<{ id: string; title: string; content: string }>(
+				"/api/documents",
+				{
+					method: "POST",
+					body: JSON.stringify(parsed.data),
+				},
+			);
+			nav(`/documents/${res.id}`);
+		} catch (e) {
+			setError(e);
+		} finally {
+			setLoading(false);
+		}
+	}
 
-  return (
-    <div>
-      <h2>New Document</h2>
-      <label htmlFor="doc_title">Title</label>
-      <input id="doc_title" value={title} onChange={(e) => setTitle(e.target.value)} style={{width:'100%'}} />
-      <label htmlFor="doc_content">Content</label>
-      <textarea id="doc_content" rows={12} value={content} onChange={(e) => setContent(e.target.value)} style={{width:'100%'}} />
-      <div className="row" style={{marginTop: '.75rem'}}>
-        <button type="button" disabled={loading} onClick={create}>Create</button>
-      </div>
-      {error ? <div style={{marginTop: '.75rem'}}><ErrorBlock error={error} /></div> : null}
-    </div>
-  )
+	return (
+		<div className="space-y-4">
+			<h2 className="text-2xl font-semibold">New Document</h2>
+			<div className="space-y-2">
+				<Label htmlFor="doc_title">Title</Label>
+				<Input
+					id="doc_title"
+					value={title}
+					onChange={(e) => setTitle(e.target.value)}
+					placeholder="Enter document title"
+				/>
+			</div>
+			<div className="space-y-2">
+				<Label htmlFor="doc_content">Content</Label>
+				<Textarea
+					id="doc_content"
+					rows={12}
+					value={content}
+					onChange={(e) => setContent(e.target.value)}
+					placeholder="Enter document content"
+				/>
+			</div>
+			<div className="flex gap-2">
+				<Button disabled={loading} onClick={create}>
+					{loading ? "Creating..." : "Create Document"}
+				</Button>
+			</div>
+			{error ? <ErrorBlock error={error} /> : null}
+		</div>
+	);
 }
