@@ -1,7 +1,9 @@
-import { ChatSection } from "@llamaindex/chat-ui";
-import { useOpenRouterChat } from "@/hooks/useOpenRouterChat";
+import { ChatSection } from "@/components/chat";
 
 export default function Home() {
-	const handler = useOpenRouterChat();
-	return <ChatSection handler={handler} />;
+	return (
+		<div className="h-full">
+			<ChatSection />
+		</div>
+	);
 }
