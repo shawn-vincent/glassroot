@@ -22,29 +22,32 @@ export default function Documents() {
 	});
 
 	return (
-		<div className="space-y-4">
-			<div className="flex items-center justify-between">
-				<div />
-				<Link to="/documents/new">
-					<Button>New Document</Button>
-				</Link>
+		<div className="flex flex-col h-full overflow-hidden">
+			<div className="flex-shrink-0 space-y-4 pb-4">
+				<div className="flex items-center justify-between">
+					<div />
+					<Link to="/documents/new">
+						<Button>New Document</Button>
+					</Link>
+				</div>
+				<div className="flex items-center justify-between">
+					{isLoading ? (
+						<div className="text-muted-foreground">Loading…</div>
+					) : (
+						<div className="text-sm text-muted-foreground">
+							Last updated{" "}
+							{dataUpdatedAt ? new Date(dataUpdatedAt).toLocaleTimeString() : "—"}{" "}
+							{isStale && "(stale)"}
+						</div>
+					)}
+					<Button variant="outline" onClick={() => window.location.reload()}>
+						Refresh
+					</Button>
+				</div>
+				{error && <ErrorBlock error={error} />}
 			</div>
-			<div className="flex items-center justify-between">
-				{isLoading ? (
-					<div className="text-muted-foreground">Loading…</div>
-				) : (
-					<div className="text-sm text-muted-foreground">
-						Last updated{" "}
-						{dataUpdatedAt ? new Date(dataUpdatedAt).toLocaleTimeString() : "—"}{" "}
-						{isStale && "(stale)"}
-					</div>
-				)}
-				<Button variant="outline" onClick={() => window.location.reload()}>
-					Refresh
-				</Button>
-			</div>
-			{error && <ErrorBlock error={error} />}
-			<div className="grid gap-3">
+			<div className="flex-1 overflow-y-auto -mx-4 px-4">
+				<div className="grid gap-3 pb-4">
 				{data?.documents?.map((d) => (
 					<Card key={d.id}>
 						<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -66,6 +69,7 @@ export default function Documents() {
 						</CardHeader>
 					</Card>
 				))}
+				</div>
 			</div>
 		</div>
 	);

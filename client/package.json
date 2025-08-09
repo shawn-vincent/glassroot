@@ -8,14 +8,15 @@
 		"build": "tsc -b && vite build",
 		"preview": "vite preview --port 5173",
 		"build:web": "npm run build",
-		"build:ios": "npm run build && npx cap sync ios",
+		"build:ios": "npm run build && npx cap sync ios && ./bin/prepare-ios-build.sh",
 		"build:android": "npm run build && npx cap sync android",
-		"dev:ios": "npx cap run ios",
+		"dev:ios": "./bin/prepare-ios-build.sh && npx cap run ios",
 		"dev:android": "npx cap run android",
-		"dev:shawniphone": "./bin/deploy-iphone.sh",
+		"dev:shawniphone": "./bin/prepare-ios-build.sh && ./bin/deploy-iphone.sh",
 		"sync": "npx cap sync",
-		"open:ios": "npx cap open ios",
-		"open:android": "npx cap open android"
+		"open:ios": "./bin/prepare-ios-build.sh && npx cap open ios",
+		"open:android": "npx cap open android",
+		"clean:ios": "./bin/prepare-ios-build.sh"
 	},
 	"dependencies": {
 		"@capacitor/android": "^7.4.2",

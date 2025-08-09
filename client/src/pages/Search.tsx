@@ -40,7 +40,8 @@ export default function Search() {
 	}
 
 	return (
-		<div className="space-y-4">
+		<div className="flex flex-col h-full overflow-hidden">
+			<div className="flex-shrink-0 space-y-4 pb-4">
 			<div className="space-y-2">
 				<Label htmlFor="search_query">Query</Label>
 				<Input
@@ -64,30 +65,33 @@ export default function Search() {
 				</Button>
 			</div>
 			{error ? <ErrorBlock error={error} /> : null}
-			<div className="grid gap-3">
-				{results.map((r) => (
-					<Card key={r.id}>
-						<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-							<div className="space-y-1">
-								<CardTitle>
-									<Link to={`/documents/${r.id}`} className="hover:underline">
-										{r.title || r.id}
-									</Link>
-								</CardTitle>
-								<div className="flex items-center gap-2">
-									<Badge variant="secondary">
-										Similarity: {r.similarity.toFixed(4)}
-									</Badge>
+			</div>
+			<div className="flex-1 overflow-y-auto -mx-4 px-4">
+				<div className="grid gap-3 pb-4">
+					{results.map((r) => (
+						<Card key={r.id}>
+							<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+								<div className="space-y-1">
+									<CardTitle>
+										<Link to={`/documents/${r.id}`} className="hover:underline">
+											{r.title || r.id}
+										</Link>
+									</CardTitle>
+									<div className="flex items-center gap-2">
+										<Badge variant="secondary">
+											Similarity: {r.similarity.toFixed(4)}
+										</Badge>
+									</div>
 								</div>
-							</div>
-							<Link to={`/documents/${r.id}`}>
-								<Button variant="secondary" size="sm">
-									Open
-								</Button>
-							</Link>
-						</CardHeader>
-					</Card>
-				))}
+								<Link to={`/documents/${r.id}`}>
+									<Button variant="secondary" size="sm">
+										Open
+									</Button>
+								</Link>
+							</CardHeader>
+						</Card>
+					))}
+				</div>
 			</div>
 		</div>
 	);

@@ -14,6 +14,7 @@ import Documents from "./pages/Documents";
 import Home from "./pages/Home";
 import Search from "./pages/Search";
 import "./styles.css";
+import { setupCapacitorViewport } from "./utils/capacitor-viewport";
 
 const router = createBrowserRouter(
 	[
@@ -51,6 +52,10 @@ const qc = new QueryClient({
 	}),
 	defaultOptions: { queries: { retry: false } },
 });
+
+// Setup Capacitor viewport fixes
+setupCapacitorViewport();
+
 const rootEl = document.getElementById("root");
 if (!rootEl) throw new Error("Root element #root not found");
 createRoot(rootEl).render(

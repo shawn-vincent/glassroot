@@ -21,8 +21,8 @@ export default function App() {
 		}
 	}, []);
 	return (
-		<div className="h-full flex flex-col">
-			<header className="flex items-center justify-between px-4 py-3 md:py-3 border-b border-border sticky top-0 bg-background z-10 pt-safe">
+		<div className="h-full flex flex-col overflow-hidden">
+			<header className="flex-shrink-0 flex items-center justify-between px-4 py-3 md:py-3 border-b border-border bg-background z-10 pt-safe">
 				<nav className="flex gap-4">
 					<Link
 						to="/"
@@ -70,11 +70,10 @@ export default function App() {
 			<OfflineIndicator />
 			<Toaster richColors position="bottom-right" />
 			<main
-				className={
-					pathname === "/"
-						? "flex-1 flex flex-col min-h-0"
-						: "p-4 max-w-[960px] w-full mx-auto flex-1 flex flex-col min-h-0"
-				}
+				className={cn(
+					"flex-1 flex flex-col min-h-0 overflow-hidden",
+					pathname === "/" ? "" : "p-4 max-w-[960px] w-full mx-auto"
+				)}
 			>
 				<Outlet />
 			</main>

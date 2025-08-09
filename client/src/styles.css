@@ -42,11 +42,30 @@
 }
 
 @layer base {
-	html, body, #root {
-		@apply h-full;
+	html {
+		height: 100%;
+		height: calc(var(--vh, 1vh) * 100);
+		/* Prevent viewport bouncing on iOS */
+		position: fixed;
+		width: 100%;
+		overflow: hidden;
+		-webkit-overflow-scrolling: touch;
 	}
 	body {
+		height: 100%;
 		@apply m-0 bg-background text-foreground font-sans;
+		/* Prevent viewport scrolling */
+		position: fixed;
+		width: 100%;
+		overflow: hidden;
+		overscroll-behavior: none;
+		-webkit-overflow-scrolling: touch;
+	}
+	#root {
+		height: 100%;
+		/* Enable scrolling within the app container */
+		overflow: hidden;
+		position: relative;
 	}
 }
 
@@ -129,6 +148,20 @@
 	body {
 		@apply bg-background text-foreground;
 	}
+	/* Prevent iOS zoom on input focus */
+	input,
+	textarea,
+	select {
+		font-size: 16px !important;
+	}
+	/* Ensure proper sizing for smaller screens */
+	@media screen and (min-width: 768px) {
+		input,
+		textarea,
+		select {
+			font-size: inherit !important;
+		}
+	}
 }
 
 @source '../node_modules/@llamaindex/chat-ui/**/*.{ts,tsx,js,jsx}';
@@ -136,6 +169,7 @@
 @layer utilities {
 	.overflow-auto {
 		overflow: auto;
+		-webkit-overflow-scrolling: touch;
 	}
 	.pt-safe {
 		padding-top: env(safe-area-inset-top);
@@ -148,5 +182,20 @@
 	}
 	.pr-safe {
 		padding-right: env(safe-area-inset-right);
+	}
+	/* Utility classes for mobile viewport management */
+	.fixed-viewport {
+		position: fixed;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		overflow: hidden;
+	}
+	.scrollable-content {
+		overflow-y: auto;
+		overflow-x: hidden;
+		-webkit-overflow-scrolling: touch;
+		height: 100%;
 	}
 }
