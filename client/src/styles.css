@@ -2,6 +2,7 @@
 @import "@llamaindex/chat-ui/styles/markdown.css";
 @import "@llamaindex/chat-ui/styles/pdf.css";
 @import "@llamaindex/chat-ui/styles/editor.css";
+@import "./styles/viewport.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -43,8 +44,8 @@
 
 @layer base {
 	html {
-		height: 100%;
-		height: calc(var(--vh, 1vh) * 100);
+		height: 100vh;
+		height: 100dvh; /* Dynamic viewport height */
 		height: -webkit-fill-available;
 		/* Prevent viewport bouncing on iOS */
 		position: fixed;
@@ -64,15 +65,12 @@
 		-webkit-overflow-scrolling: touch;
 		/* Prevent transform on keyboard */
 		transform: translate3d(0, 0, 0);
+		/* Prevent all zooming through touch-action */
+		touch-action: pan-x pan-y;
 	}
 	#root {
-		height: 100%;
-		height: var(--available-height, 100%);
-		/* Enable scrolling within the app container */
-		overflow: hidden;
-		position: relative;
-		/* Ensure content stays in place */
-		transform: translate3d(0, 0, 0);
+		/* Handled by viewport.css for keyboard awareness */
+		/* Position and dimensions set in viewport.css */
 	}
 }
 
@@ -158,10 +156,12 @@
 	/* Prevent iOS zoom on input focus */
 	input,
 	textarea,
-	select {
+	select,
+	button {
 		font-size: 16px !important;
+		touch-action: manipulation;
 	}
-	/* Ensure proper sizing for smaller screens */
+	/* Ensure proper sizing for larger screens */
 	@media screen and (min-width: 768px) {
 		input,
 		textarea,
@@ -189,6 +189,22 @@
 	}
 	.pr-safe {
 		padding-right: env(safe-area-inset-right);
+	}
+	/* Modern viewport units utilities */
+	.h-dvh {
+		height: 100dvh;
+	}
+	.min-h-dvh {
+		min-height: 100dvh;
+	}
+	.max-h-dvh {
+		max-height: 100dvh;
+	}
+	.h-svh {
+		height: 100svh;
+	}
+	.h-lvh {
+		height: 100lvh;
 	}
 	/* Utility classes for mobile viewport management */
 	.fixed-viewport {

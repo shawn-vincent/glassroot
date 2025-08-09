@@ -1,0 +1,227 @@
+@layer viewport {
+  /* Dynamic viewport height with fallbacks */
+  :root {
+    --vh: 1vh;
+    --keyboard-height: 0px;
+    --safe-top: env(safe-area-inset-top);
+    --safe-bottom: env(safe-area-inset-bottom);
+    --safe-left: env(safe-area-inset-left);
+    --safe-right: env(safe-area-inset-right);
+  }
+
+  /* Use modern viewport units with fallbacks */
+  html {
+    height: 100vh;
+    height: 100dvh; /* Dynamic viewport height */
+    position: fixed;
+    width: 100%;
+  }
+
+  body {
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+    overscroll-behavior: none;
+    /* Prevent all zooming through touch-action */
+    touch-action: pan-x pan-y;
+  }
+
+  /* App container with keyboard awareness */
+  #root {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    bottom: var(--keyboard-height, 0px);
+    overflow: hidden;
+    transition: bottom 0.3s ease-out;
+  }
+
+  /* Allow pinch-zoom only on specific content */
+  .zoomable {
+    touch-action: pinch-zoom;
+  }
+
+  /* Ensure inputs don't trigger zoom */
+  input,
+  textarea,
+  select,
+  button {
+    touch-action: manipulation;
+  }
+
+  /* Scrollable containers */
+  .scrollable {
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+  }
+
+  /* Platform-specific adjustments */
+  .ios body {
+    /* iOS-specific fixes */
+    position: fixed;
+    width: 100%;
+  }
+
+  .android body {
+    /* Android-specific fixes */
+    overflow: hidden;
+  }
+
+  /* Keyboard visible state - shrink the viewport */
+  .keyboard-visible {
+    /* Apply keyboard offset to fixed positioned elements */
+  }
+  
+  .keyboard-visible #root {
+    /* Root shrinks when keyboard is visible */
+    bottom: var(--keyboard-height, 0px);
+  }
+  
+  /* Ensure dialogs and modals also adjust */
+  .keyboard-visible [role="dialog"],
+  .keyboard-visible .fixed {
+    max-height: calc(100vh - var(--keyboard-height, 0px));
+  }
+
+  /* User zoomed state */
+  .user-zoomed {
+    /* Disable certain interactions when zoomed */
+    pointer-events: none;
+  }
+
+  .user-zoomed input,
+  .user-zoomed textarea,
+  .user-zoomed button,
+  .user-zoomed a {
+    pointer-events: auto;
+  }
+
+  /* Safe area utilities */
+  .safe-top {
+    padding-top: var(--safe-top);
+  }
+
+  .safe-bottom {
+    padding-bottom: var(--safe-bottom);
+  }
+
+  .safe-left {
+    padding-left: var(--safe-left);
+  }
+
+  .safe-right {
+    padding-right: var(--safe-right);
+  }
+
+  /* Prevent focus zoom on iOS */
+  @supports (-webkit-touch-callout: none) {
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="number"],
+    input[type="tel"],
+    input[type="url"],
+    input[type="search"],
+    textarea,
+    select {
+      font-size: 16px !important;
+    }
+  }
+
+  /* Responsive adjustments for larger screens */
+  @media screen and (min-width: 768px) {
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="number"],
+    input[type="tel"],
+    input[type="url"],
+    input[type="search"],
+    textarea,
+    select {
+      font-size: inherit !important;
+    }
+  }
+
+  /* Standalone mode (PWA) adjustments */
+  @media (display-mode: standalone) {
+    .standalone #root {
+      padding-top: var(--safe-top);
+    }
+  }
+
+  /* Capacitor-specific adjustments */
+  .capacitor #root {
+    /* Account for native UI elements */
+    height: calc(100dvh - var(--keyboard-height) - var(--safe-top) - var(--safe-bottom));
+  }
+
+  /* Common patterns for keyboard-aware layouts */
+  
+  /* For bottom-fixed elements like chat inputs */
+  .keyboard-adjust-bottom {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    transition: transform 0.3s ease-out;
+  }
+  
+  .keyboard-visible .keyboard-adjust-bottom {
+    transform: translateY(calc(-1 * var(--keyboard-height, 0px)));
+  }
+  
+  /* For full-screen modals and dialogs */
+  .keyboard-adjust-modal {
+    max-height: 100vh;
+    transition: max-height 0.3s ease-out;
+  }
+  
+  .keyboard-visible .keyboard-adjust-modal {
+    max-height: calc(100vh - var(--keyboard-height, 0px));
+  }
+  
+  /* For scrollable content areas */
+  .keyboard-adjust-scroll {
+    height: 100%;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .keyboard-visible .keyboard-adjust-scroll {
+    padding-bottom: var(--keyboard-height, 0px);
+  }
+  
+  /* Ensure focused inputs are visible */
+  .keyboard-visible input:focus,
+  .keyboard-visible textarea:focus,
+  .keyboard-visible select:focus {
+    /* Scroll into view handled by JavaScript, but ensure visibility */
+    position: relative;
+    z-index: 10;
+  }
+
+  /* Debug mode styles */
+  #viewport-debug {
+    position: fixed;
+    bottom: 10px;
+    left: 10px;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 10px;
+    font-size: 12px;
+    z-index: 9999;
+    pointer-events: none;
+    font-family: monospace;
+    border-radius: 4px;
+  }
+  
+  /* Adjust debug panel when keyboard is visible */
+  .keyboard-visible #viewport-debug {
+    transform: translateY(calc(-1 * var(--keyboard-height, 0px)));
+  }
+}

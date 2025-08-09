@@ -6,10 +6,19 @@ import { Link, Outlet, useLocation } from "react-router-dom";
 import ConfigPanel from "./components/ConfigPanel";
 import OfflineIndicator from "./components/OfflineIndicator";
 import { Toaster } from "./components/ui/sonner";
+import { useViewport } from "@/hooks/useViewport";
+import { useInputFocus } from "@/hooks/useInputFocus";
+import { applyPlatformClasses } from "@/utils/platform";
+import { setupKeyboard } from "@/utils/keyboard";
 
 export default function App() {
 	const [showConfig, setShowConfig] = useState(false);
 	const { pathname } = useLocation();
+	
+	// Add viewport management hooks
+	useViewport();
+	useInputFocus();
+	
 	// Apply persisted theme at app mount to avoid mismatch
 	useEffect(() => {
 		const saved = localStorage.getItem("theme");
@@ -19,9 +28,13 @@ export default function App() {
 		} else {
 			document.documentElement.classList.remove("dark");
 		}
+		
+		// Apply platform classes and setup keyboard
+		applyPlatformClasses();
+		setupKeyboard();
 	}, []);
 	return (
-		<div className="h-full flex flex-col overflow-hidden fixed inset-0">
+		<div className="flex flex-col overflow-hidden h-full">
 			<header className="flex-shrink-0 flex items-center justify-between px-4 py-3 md:py-3 border-b border-border bg-background z-10 pt-safe">
 				<nav className="flex gap-4">
 					<Link
