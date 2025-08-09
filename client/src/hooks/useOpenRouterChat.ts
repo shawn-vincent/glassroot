@@ -127,11 +127,12 @@ export function useOpenRouterChat(): ChatHandler {
 									const content = json.choices?.[0]?.delta?.content || "";
 									if (content) {
 										setMessages((prev) => {
-											const newMessages = [...prev];
-											const lastMessage = newMessages[newMessages.length - 1];
-											if (lastMessage.role === "assistant") {
-												lastMessage.content += content;
-											}
+											const newMessages = prev.map((msg, idx) => {
+												if (idx === prev.length - 1 && msg.role === "assistant") {
+													return { ...msg, content: msg.content + content };
+												}
+												return msg;
+											});
 											return newMessages;
 										});
 									}

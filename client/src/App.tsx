@@ -21,7 +21,7 @@ export default function App() {
 		}
 	}, []);
 	return (
-		<div className="min-h-screen flex flex-col">
+		<div className="h-full flex flex-col">
 			<header className="flex items-center justify-between px-4 py-3 border-b border-border sticky top-0 bg-background z-10">
 				<nav className="flex gap-4">
 					<Link
