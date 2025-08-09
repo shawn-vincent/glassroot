@@ -60,6 +60,24 @@ export default function ConfigPanel({ onClose }: Props) {
 								{show ? <EyeOff size={16} /> : <Eye size={16} />}
 							</Button>
 						</div>
+						{!apiKey && (
+							<p className="text-xs text-muted-foreground">
+								Get your API key at{" "}
+								<a
+									href="https://openrouter.ai/settings/keys"
+									target="_blank"
+									rel="noopener noreferrer"
+									className="underline hover:text-primary"
+								>
+									openrouter.ai/settings/keys
+								</a>
+							</p>
+						)}
+						{apiKey && !apiKey.startsWith("sk-or-") && (
+							<p className="text-xs text-destructive">
+								API key should start with "sk-or-"
+							</p>
+						)}
 					</div>
 					<div className="space-y-2">
 						<Label htmlFor="cfg_model">Model</Label>

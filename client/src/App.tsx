@@ -29,17 +29,17 @@ export default function App() {
 						className={
 							pathname === "/"
 								? "text-foreground font-semibold"
-								: "text-muted no-underline"
+								: "text-muted-foreground hover:text-foreground no-underline"
 						}
 					>
-						Home
+						Chat
 					</Link>
 					<Link
 						to="/documents"
 						className={
 							pathname.startsWith("/documents")
 								? "text-foreground font-semibold"
-								: "text-muted no-underline"
+								: "text-muted-foreground hover:text-foreground no-underline"
 						}
 					>
 						Documents
@@ -49,7 +49,7 @@ export default function App() {
 						className={
 							pathname.startsWith("/search")
 								? "text-foreground font-semibold"
-								: "text-muted no-underline"
+								: "text-muted-foreground hover:text-foreground no-underline"
 						}
 					>
 						Search
