@@ -1,5 +1,9 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import "@llamaindex/chat-ui/styles/markdown.css";
+@import "@llamaindex/chat-ui/styles/pdf.css";
+@import "@llamaindex/chat-ui/styles/editor.css";
+@source "../node_modules/@llamaindex/chat-ui/**/*.{ts,tsx}";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -125,3 +129,5 @@
 		@apply bg-background text-foreground;
 	}
 }
+
+@source '../node_modules/@llamaindex/chat-ui/**/*.{ts,tsx}'
