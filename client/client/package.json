@@ -1,7 +1,0 @@
-{
-  "dependencies": {
-    "@llamaindex/chat-ui": "^0.5.17",
-    "ai": "^5.0.8",
-    "openai": "^5.12.2"
-  }
-}

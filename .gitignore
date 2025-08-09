@@ -24,3 +24,10 @@ client/dist/
 api/.wrangler/
 api/.dev.vars
 api/dist/
+
+# Capacitor
+client/ios/
+client/android/
+*.apk
+*.ipa
+*.aab
