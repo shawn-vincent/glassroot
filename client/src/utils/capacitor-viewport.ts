@@ -74,9 +74,43 @@ export function setupCapacitorViewport() {
 		document.documentElement.style.setProperty("--vh", `${vh}px`);
 	};
 
+	// Handle keyboard appearance using Visual Viewport API
+	const handleViewportChange = () => {
+		if (window.visualViewport) {
+			const height = window.visualViewport.height;
+			const offsetTop = window.visualViewport.offsetTop;
+			
+			// Set the available height considering keyboard
+			document.documentElement.style.setProperty("--keyboard-height", `${window.innerHeight - height}px`);
+			document.documentElement.style.setProperty("--available-height", `${height}px`);
+			
+			// Prevent content from being pushed off-screen
+			if (offsetTop > 0) {
+				window.scrollTo(0, 0);
+				document.body.style.transform = "translateY(0)";
+			}
+			
+			// Update root element height to match visual viewport
+			const root = document.getElementById("root");
+			if (root) {
+				root.style.height = `${height}px`;
+			}
+		}
+	};
+
 	setViewportHeight();
 	window.addEventListener("resize", setViewportHeight);
 	window.addEventListener("orientationchange", setViewportHeight);
+	
+	// Listen to visual viewport changes (keyboard show/hide)
+	if (window.visualViewport) {
+		window.visualViewport.addEventListener("resize", handleViewportChange);
+		window.visualViewport.addEventListener("scroll", (e) => {
+			// Prevent the viewport from scrolling when keyboard appears
+			e.preventDefault();
+			window.scrollTo(0, 0);
+		});
+	}
 
 	// Prevent pull-to-refresh
 	document.body.style.overscrollBehavior = "none";
@@ -114,6 +148,33 @@ export function setupCapacitorViewport() {
 		document.addEventListener("focusout", () => {
 			// Keep zoom disabled in native app context
 			preventZoom();
+		});
+		
+		// Handle keyboard show/hide specifically for iOS
+		let lastFocusedElement: Element | null = null;
+		
+		document.addEventListener("focusin", (e) => {
+			lastFocusedElement = e.target as Element;
+			// Ensure the focused element stays visible
+			setTimeout(() => {
+				if (lastFocusedElement && lastFocusedElement instanceof HTMLElement) {
+					// Don't scroll the viewport, just ensure element is visible within current view
+					const rect = lastFocusedElement.getBoundingClientRect();
+					if (rect.bottom > window.visualViewport!.height) {
+						// Element is below the keyboard, need to adjust container scroll
+						const scrollContainer = lastFocusedElement.closest(".overflow-y-auto, .scrollable-content");
+						if (scrollContainer) {
+							const containerRect = scrollContainer.getBoundingClientRect();
+							const scrollAmount = rect.bottom - window.visualViewport!.height + 20; // 20px padding
+							scrollContainer.scrollTop += scrollAmount;
+						}
+					}
+				}
+			}, 300); // Delay to let keyboard animation complete
+		});
+		
+		document.addEventListener("focusout", () => {
+			lastFocusedElement = null;
 		});
 	}
 }

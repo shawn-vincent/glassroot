@@ -45,6 +45,7 @@
 	html {
 		height: 100%;
 		height: calc(var(--vh, 1vh) * 100);
+		height: -webkit-fill-available;
 		/* Prevent viewport bouncing on iOS */
 		position: fixed;
 		width: 100%;
@@ -53,6 +54,7 @@
 	}
 	body {
 		height: 100%;
+		height: -webkit-fill-available;
 		@apply m-0 bg-background text-foreground font-sans;
 		/* Prevent viewport scrolling */
 		position: fixed;
@@ -60,12 +62,17 @@
 		overflow: hidden;
 		overscroll-behavior: none;
 		-webkit-overflow-scrolling: touch;
+		/* Prevent transform on keyboard */
+		transform: translate3d(0, 0, 0);
 	}
 	#root {
 		height: 100%;
+		height: var(--available-height, 100%);
 		/* Enable scrolling within the app container */
 		overflow: hidden;
 		position: relative;
+		/* Ensure content stays in place */
+		transform: translate3d(0, 0, 0);
 	}
 }
 

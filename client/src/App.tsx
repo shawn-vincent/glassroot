@@ -21,7 +21,7 @@ export default function App() {
 		}
 	}, []);
 	return (
-		<div className="h-full flex flex-col overflow-hidden">
+		<div className="h-full flex flex-col overflow-hidden fixed inset-0">
 			<header className="flex-shrink-0 flex items-center justify-between px-4 py-3 md:py-3 border-b border-border bg-background z-10 pt-safe">
 				<nav className="flex gap-4">
 					<Link
