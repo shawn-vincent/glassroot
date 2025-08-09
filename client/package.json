@@ -12,7 +12,7 @@
 		"build:android": "npm run build && npx cap sync android",
 		"dev:ios": "npx cap run ios",
 		"dev:android": "npx cap run android",
-		"dev:shawniphone": "./scripts/deploy-iphone.sh",
+		"dev:shawniphone": "./bin/deploy-iphone.sh",
 		"sync": "npx cap sync",
 		"open:ios": "npx cap open ios",
 		"open:android": "npx cap open android"

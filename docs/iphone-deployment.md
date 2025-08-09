@@ -74,4 +74,4 @@ If the script can't find your device:
 
 ## Custom Device Names
 
-To deploy to a different device, edit `client/scripts/deploy-iphone.sh` and change the grep pattern from "Shawn" to your device name.
+To deploy to a different device, edit `client/bin/deploy-iphone.sh` and change the grep pattern from "Shawn" to your device name.
