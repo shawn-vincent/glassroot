@@ -90,7 +90,7 @@ export default function ConfigPanel({ onClose }: Props) {
 						</div>
 					</div>
 				</div>
-				<SheetFooter className="px-6 pb-6 flex-shrink-0">
+				<SheetFooter className="px-6 pb-2 flex-shrink-0">
 					<Button onClick={save}>Save Settings</Button>
 				</SheetFooter>
 			</SheetContent>

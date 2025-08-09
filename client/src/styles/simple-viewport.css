@@ -1,7 +1,8 @@
-/* Simple viewport management using one CSS variable */
+/* Simple viewport management using CSS variables */
 
 :root {
   --viewport-height: 100vh; /* Default fallback */
+  --bottom-safe-area: env(safe-area-inset-bottom); /* Default to actual safe area */
 }
 
 html, body {
@@ -12,13 +13,14 @@ html, body {
   overflow: hidden;
 }
 
-/* Root container uses the viewport height */
+/* Root container uses the viewport height with smooth transition */
 #root {
   width: 100%;
   height: var(--viewport-height);
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* Header should not shrink */
@@ -34,17 +36,19 @@ main {
   min-height: 0;
 }
 
-/* Sheets use the viewport height - more specific selector for override */
+/* Sheets use the viewport height with smooth transition */
 .fixed[data-slot="sheet-content"] {
   height: var(--viewport-height) !important;
   max-height: var(--viewport-height) !important;
   top: 0 !important;
   bottom: auto !important;
+  transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1), max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Dialogs respect the viewport height */
+/* Dialogs respect the viewport height with smooth transition */
 [data-slot="dialog-content"] {
-  max-height: calc(var(--viewport-height) - 2rem) !important;
+  max-height: calc(var(--viewport-height) - var(--bottom-safe-area) - env(safe-area-inset-top)) !important;
+  transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* Prevent iOS bounce */
@@ -65,4 +69,18 @@ input, textarea, select {
 
 .pb-safe {
   padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Dynamic bottom safe area that responds to keyboard */
+.pb-safe-keyboard {
+  padding-bottom: var(--bottom-safe-area);
+  transition: padding-bottom 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Apply dynamic safe area to chat input container */
+[data-chat-input], 
+.chat-input-container,
+form:has(textarea) {
+  padding-bottom: var(--bottom-safe-area);
+  transition: padding-bottom 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
