@@ -16,7 +16,10 @@
 		"sync": "npx cap sync",
 		"open:ios": "./bin/prepare-ios-build.sh && npx cap open ios",
 		"open:android": "npx cap open android",
-		"clean:ios": "./bin/prepare-ios-build.sh"
+		"clean:ios": "./bin/prepare-ios-build.sh",
+		"deploy": "npm run build && npx wrangler pages deploy dist --project-name=glassroot",
+		"deploy:staging": "npm run build && npx wrangler pages deploy dist --project-name=glassroot --branch=staging",
+		"deploy:production": "npm run build && npx wrangler pages deploy dist --project-name=glassroot --branch=main"
 	},
 	"dependencies": {
 		"@capacitor/android": "^7.4.2",

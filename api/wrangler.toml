@@ -9,7 +9,7 @@ CORS_ORIGIN = "*"
 [[d1_databases]]
 binding = "DB"
 database_name = "glassroot"
-database_id = "${D1_DATABASE_ID}"
+database_id = "cd6f1d44-3c60-46e9-b133-a4cd54bbc3be"
 
 [[vectorize]]
 binding = "VECTORS"

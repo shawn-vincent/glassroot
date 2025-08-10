@@ -15,7 +15,18 @@
 		"typecheck": "npm -w api exec tsc --noEmit && npm -w client exec tsc --noEmit",
 		"lint": "biome lint --reporter summary .",
 		"format": "biome format .",
-		"check": "npm run typecheck && npm run lint"
+		"check": "npm run typecheck && npm run lint",
+		"deploy": "npm run deploy:api && npm run deploy:client",
+		"deploy:api": "npm --workspace api run deploy",
+		"deploy:api:staging": "npm --workspace api run deploy:staging",
+		"deploy:api:production": "npm --workspace api run deploy:production",
+		"deploy:client": "npm --workspace client run deploy",
+		"deploy:client:staging": "npm --workspace client run deploy:staging",
+		"deploy:client:production": "npm --workspace client run deploy:production",
+		"deploy:staging": "npm run deploy:api:staging && npm run deploy:client:staging",
+		"deploy:production": "npm run deploy:api:production && npm run deploy:client:production",
+		"db:migrate": "npm --workspace api run db:migrate",
+		"db:migrate:local": "npm --workspace api run db:migrate:local"
 	},
 	"devDependencies": {
 		"concurrently": "^9.0.1",
