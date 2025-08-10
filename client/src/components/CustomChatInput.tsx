@@ -1,7 +1,7 @@
 import { ChatInput, useChatUI } from "@llamaindex/chat-ui";
 import { MarkdownEditor } from "./ui/markdown-editor";
 import { Button } from "./ui/button";
-import { SendHorizontal } from "lucide-react";
+import { ArrowUp } from "lucide-react";
 
 export function CustomChatInput() {
 	const { input, setInput, append, isLoading } = useChatUI();
@@ -10,8 +10,11 @@ export function CustomChatInput() {
 		e.preventDefault();
 		if (!input.trim() || isLoading) return;
 		
+		// Double newlines to turn them into paragraphs
+		const formattedContent = input.replace(/\n/g, '\n\n');
+		
 		await append({
-			content: input,
+			content: formattedContent,
 			role: "user"
 		});
 		setInput("");
@@ -21,7 +24,7 @@ export function CustomChatInput() {
 		<ChatInput className="border-t border-border bg-background">
 			<form 
 				onSubmit={handleSubmit}
-				className="flex flex-col gap-2 p-4 pb-safe-keyboard"
+				className="flex items-end gap-2 p-4 pb-safe-keyboard"
 			>
 				<MarkdownEditor
 					value={input}
@@ -32,17 +35,14 @@ export function CustomChatInput() {
 					editable={!isLoading}
 					className="flex-1"
 				/>
-				<div className="flex justify-end">
-					<Button 
-						type="submit" 
-						disabled={isLoading || !input.trim()}
-						size="sm"
-						className="gap-2"
-					>
-						<SendHorizontal size={16} />
-						Send
-					</Button>
-				</div>
+				<Button 
+					type="submit" 
+					disabled={isLoading || !input.trim()}
+					size="icon"
+					className="rounded-full h-8 w-8 flex-shrink-0"
+				>
+					<ArrowUp size={16} />
+				</Button>
 			</form>
 		</ChatInput>
 	);

@@ -1,6 +1,9 @@
 import { EditorView } from "@codemirror/view";
 import { markdown } from "@codemirror/lang-markdown";
+import { languages } from "@codemirror/language-data";
 import { githubDark, githubLight } from "@uiw/codemirror-theme-github";
+import { syntaxHighlighting, HighlightStyle } from "@codemirror/language";
+import { tags as t } from "@lezer/highlight";
 import CodeMirror, { Extension } from "@uiw/react-codemirror";
 import { useEffect, useState, useMemo } from "react";
 
@@ -39,6 +42,27 @@ export function MarkdownEditor({
 		return `${totalLines * 20}px`;
 	}, [value, height, minLines, maxLines]);
 
+	// Create highlight style for monospace code
+	const monospaceHighlight = useMemo(() => 
+		syntaxHighlighting(HighlightStyle.define([
+			{ tag: t.monospace, fontFamily: "var(--font-mono, ui-monospace, monospace)" },
+			// Markdown meta characters (```, language names, etc.)
+			{ tag: t.meta, fontFamily: "var(--font-mono, ui-monospace, monospace)" },
+			{ tag: t.processingInstruction, fontFamily: "var(--font-mono, ui-monospace, monospace)" },
+			{ tag: t.labelName, fontFamily: "var(--font-mono, ui-monospace, monospace)" },
+			// Also style specific code-related tags
+			{ tag: t.string, fontFamily: "var(--font-mono, ui-monospace, monospace)" },
+			{ tag: t.keyword, fontFamily: "var(--font-mono, ui-monospace, monospace)" },
+			{ tag: t.atom, fontFamily: "var(--font-mono, ui-monospace, monospace)" },
+			{ tag: t.number, fontFamily: "var(--font-mono, ui-monospace, monospace)" },
+			{ tag: t.comment, fontFamily: "var(--font-mono, ui-monospace, monospace)" },
+			{ tag: t.variableName, fontFamily: "var(--font-mono, ui-monospace, monospace)" },
+			{ tag: t.typeName, fontFamily: "var(--font-mono, ui-monospace, monospace)" },
+			{ tag: t.propertyName, fontFamily: "var(--font-mono, ui-monospace, monospace)" },
+			{ tag: t.operator, fontFamily: "var(--font-mono, ui-monospace, monospace)" },
+		]))
+	, []);
+
 	useEffect(() => {
 		// Check for dark mode class on documentElement
 		const checkTheme = () => {
@@ -58,9 +82,12 @@ export function MarkdownEditor({
 		return () => observer.disconnect();
 	}, []);
 
-	// Configure editor extensions with markdown by default
+	// Configure editor extensions with markdown and code language support
 	const editorExtensions = [
-		markdown(), // Always include markdown highlighting
+		markdown({ 
+			codeLanguages: languages // Enable syntax highlighting in code blocks
+		}),
+		monospaceHighlight, // Apply monospace font to code
 		...extensions,
 		EditorView.lineWrapping,
 		EditorView.theme({
