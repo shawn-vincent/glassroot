@@ -1,12 +1,13 @@
-import { Button } from "@/components/ui/button";
+import { IconButton } from "@/components/ui/icon-button";
 import { cn } from "@/lib/utils";
-import { Moon, Settings, Sun } from "lucide-react";
+import { MessageSquare, FileText, Search, Settings } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import ConfigPanel from "./components/ConfigPanel";
 import OfflineIndicator from "./components/OfflineIndicator";
 import { Toaster } from "./components/ui/sonner";
 import { useCapacitorKeyboard } from "@/hooks/useCapacitorKeyboard";
+import { ThemeToggle } from "./components/ThemeToggle";
 
 export default function App() {
 	const [showConfig, setShowConfig] = useState(false);
@@ -30,48 +31,31 @@ export default function App() {
 	return (
 		<div className="h-full flex flex-col">
 			<header className="flex-shrink-0 flex items-center justify-between px-4 py-3 md:py-3 border-b border-border bg-background z-10 pt-safe">
-				<nav className="flex gap-4">
-					<Link
-						to="/"
-						className={
-							pathname === "/"
-								? "text-foreground font-semibold"
-								: "text-muted-foreground hover:text-foreground no-underline"
-						}
-					>
-						Chat
+				<nav className="flex gap-2">
+					<Link to="/" title="Chat">
+						<IconButton selected={pathname === "/"}>
+							<MessageSquare size={24} />
+						</IconButton>
 					</Link>
-					<Link
-						to="/documents"
-						className={
-							pathname.startsWith("/documents")
-								? "text-foreground font-semibold"
-								: "text-muted-foreground hover:text-foreground no-underline"
-						}
-					>
-						Documents
+					<Link to="/documents" title="Documents">
+						<IconButton selected={pathname.startsWith("/documents")}>
+							<FileText size={24} />
+						</IconButton>
 					</Link>
-					<Link
-						to="/search"
-						className={
-							pathname.startsWith("/search")
-								? "text-foreground font-semibold"
-								: "text-muted-foreground hover:text-foreground no-underline"
-						}
-					>
-						Search
+					<Link to="/search" title="Search">
+						<IconButton selected={pathname.startsWith("/search")}>
+							<Search size={24} />
+						</IconButton>
 					</Link>
 				</nav>
 				<div className="flex gap-2 items-center">
 					<ThemeToggle />
-					<Button
-						variant="ghost"
-						size="icon"
+					<IconButton
 						onClick={() => setShowConfig(true)}
 						aria-label="Settings"
 					>
 						<Settings size={24} />
-					</Button>
+					</IconButton>
 				</div>
 			</header>
 			<OfflineIndicator />
@@ -86,36 +70,5 @@ export default function App() {
 			</main>
 			{showConfig && <ConfigPanel onClose={() => setShowConfig(false)} />}
 		</div>
-	);
-}
-
-function ThemeToggle() {
-	const [theme, setTheme] = useState(() => {
-		const saved = localStorage.getItem("theme");
-		return saved === "dark" ? "dark" : "light";
-	});
-
-	useEffect(() => {
-		if (theme === "dark") {
-			document.documentElement.classList.add("dark");
-		} else {
-			document.documentElement.classList.remove("dark");
-		}
-		localStorage.setItem("theme", theme);
-	}, [theme]);
-
-	const toggleTheme = () => {
-		setTheme((prev) => (prev === "light" ? "dark" : "light"));
-	};
-
-	return (
-		<Button
-			variant="outline"
-			size="icon"
-			onClick={toggleTheme}
-			title={`Switch to ${theme === "light" ? "dark" : "light"} theme`}
-		>
-			{theme === "light" ? <Sun size={20} /> : <Moon size={20} />}
-		</Button>
 	);
 }

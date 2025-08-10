@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { IconButton } from "@/components/ui/icon-button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -53,13 +54,12 @@ export default function ConfigPanel({ onClose }: Props) {
 								onChange={(e) => setApiKey(e.target.value)}
 								placeholder="sk-or-..."
 							/>
-							<Button
+							<IconButton
 								variant="outline"
-								size="icon"
 								onClick={() => setShow((s) => !s)}
 							>
-								{show ? <EyeOff size={20} /> : <Eye size={20} />}
-							</Button>
+								{show ? <EyeOff size={24} /> : <Eye size={24} />}
+							</IconButton>
 						</div>
 						{!apiKey && (
 							<p className="text-xs text-muted-foreground">

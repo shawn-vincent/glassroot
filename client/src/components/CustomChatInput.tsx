@@ -1,6 +1,6 @@
 import { ChatInput, useChatUI } from "@llamaindex/chat-ui";
 import { MarkdownEditor } from "./ui/markdown-editor";
-import { Button } from "./ui/button";
+import { IconButton } from "./ui/icon-button";
 import { ArrowUp } from "lucide-react";
 
 export function CustomChatInput() {
@@ -35,14 +35,15 @@ export function CustomChatInput() {
 					editable={!isLoading}
 					className="flex-1"
 				/>
-				<Button 
+				<IconButton 
 					type="submit" 
 					disabled={isLoading || !input.trim()}
-					size="icon"
-					className="rounded-full h-8 w-8 flex-shrink-0"
+					variant="default"
+					size="sm"
+					className="flex-shrink-0"
 				>
-					<ArrowUp size={16} />
-				</Button>
+					<ArrowUp size={20} />
+				</IconButton>
 			</form>
 		</ChatInput>
 	);
