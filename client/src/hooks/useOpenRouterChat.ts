@@ -1,10 +1,14 @@
 import { useCallback, useRef, useState } from "react";
 
+type JSONValue = null | string | number | boolean | {
+	[value: string]: JSONValue;
+} | JSONValue[];
+
 export type Message = {
 	id?: string;
 	role: "user" | "assistant" | "system" | "data";
 	content: string;
-	annotations?: any[];
+	annotations?: JSONValue[];
 };
 
 export type ChatHandler = {
@@ -12,7 +16,7 @@ export type ChatHandler = {
 	input: string;
 	setInput: (value: string) => void;
 	isLoading: boolean;
-	append: (message: Message, options?: { data?: any }) => Promise<string | null | undefined>;
+	append: (message: Message, options?: { data?: Record<string, JSONValue> }) => Promise<string | null | undefined>;
 	stop: () => void;
 	reload?: () => Promise<void>;
 	setMessages: (messages: Message[]) => void;
@@ -31,7 +35,7 @@ export function useOpenRouterChat(): ChatHandler {
 	const append = useCallback(
 		async (
 			message: Message,
-			options?: { data?: any }
+			options?: { data?: Record<string, JSONValue> }
 		): Promise<string | null | undefined> => {
 			// Ensure message has an ID
 			const newMessage: Message = {
@@ -86,7 +90,7 @@ export function useOpenRouterChat(): ChatHandler {
 						messages: apiMessages,
 						stream: true,
 						temperature: 0.7,
-						...options?.data,
+						...(options?.data || {}),
 					}),
 					signal: abortControllerRef.current.signal,
 				});
@@ -145,15 +149,15 @@ export function useOpenRouterChat(): ChatHandler {
 				}
 
 				return assistantMessage.id;
-			} catch (error: any) {
-				if (error.name === "AbortError") {
+			} catch (error) {
+				if (error instanceof Error && error.name === "AbortError") {
 					console.log("Request aborted");
 				} else {
 					console.error("Chat error:", error);
 					const errorMessage: Message = {
 						id: nanoid(),
 						role: "assistant",
-						content: `Error: ${error.message}`,
+						content: `Error: ${error instanceof Error ? error.message : String(error)}`,
 					};
 					setMessages((prev) => [...prev, errorMessage]);
 				}

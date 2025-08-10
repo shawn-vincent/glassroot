@@ -41,7 +41,9 @@ export function useViewport() {
 
     // Event listeners
     const events = ['resize', 'scroll', 'orientationchange'];
-    events.forEach(event => window.addEventListener(event, updateViewport));
+    for (const event of events) {
+      window.addEventListener(event, updateViewport);
+    }
 
     // Visual Viewport API events (if available)
     if (window.visualViewport) {
@@ -50,7 +52,9 @@ export function useViewport() {
     }
 
     return () => {
-      events.forEach(event => window.removeEventListener(event, updateViewport));
+      for (const event of events) {
+        window.removeEventListener(event, updateViewport);
+      }
       if (window.visualViewport) {
         window.visualViewport.removeEventListener('resize', updateViewport);
         window.visualViewport.removeEventListener('scroll', updateViewport);

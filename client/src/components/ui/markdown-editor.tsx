@@ -4,7 +4,7 @@ import { languages } from "@codemirror/language-data";
 import { githubDark, githubLight } from "@uiw/codemirror-theme-github";
 import { syntaxHighlighting, HighlightStyle } from "@codemirror/language";
 import { tags as t } from "@lezer/highlight";
-import CodeMirror, { Extension } from "@uiw/react-codemirror";
+import CodeMirror, { type Extension } from "@uiw/react-codemirror";
 import { useEffect, useState, useMemo } from "react";
 
 interface MarkdownEditorProps {

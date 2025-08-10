@@ -1,7 +1,7 @@
 declare global {
 	interface Window {
-		Capacitor?: any;
-		MSStream?: any;
+		Capacitor?: unknown;
+		MSStream?: unknown;
 	}
 	interface Navigator {
 		standalone?: boolean;
@@ -10,7 +10,7 @@ declare global {
 
 export const platform = {
 	isIOS:
-		/iPhone|iPad|iPod/.test(navigator.userAgent) && !(window as any).MSStream,
+		/iPhone|iPad|iPod/.test(navigator.userAgent) && !window.MSStream,
 	isAndroid: /Android/.test(navigator.userAgent),
 	isCapacitor: typeof window !== "undefined" && window.Capacitor !== undefined,
 	isSafari: /^((?!chrome|android).)*safari/i.test(navigator.userAgent),
@@ -21,7 +21,7 @@ export const platform = {
 	// Detect standalone mode (PWA)
 	isStandalone:
 		window.matchMedia("(display-mode: standalone)").matches ||
-		(navigator as any).standalone === true ||
+		navigator.standalone === true ||
 		document.referrer.includes("android-app://"),
 
 	// Detect tablet
