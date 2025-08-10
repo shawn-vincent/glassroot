@@ -7,7 +7,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 Glassroot is a document management and semantic search application with an LLM chat interface, built as a monorepo with two workspaces:
 
 - **API** (`api/`): Cloudflare Workers backend providing document storage and semantic search via Cloudflare D1, Vectorize, and AI embeddings
-- **Client** (`client/`): React SPA frontend with LLM chat (OpenRouter integration), document CRUD, and semantic search
+- **Client** (`client/`): React SPA frontend with LLM chat (OpenRouter integration), document CRUD, and semantic search. Also a Capacitor mobile app for iOS/Android.
 
 ### Technology Stack
 
@@ -22,7 +22,10 @@ Glassroot is a document management and semantic search application with an LLM c
 - React 18 + Vite + TypeScript
 - React Router for navigation
 - TanStack Query for data fetching and caching
-- CodeMirror 6 for markdown editing
+- CodeMirror 6 for markdown editing with syntax highlighting
+- @llamaindex/chat-ui for chat interface
+- Capacitor for iOS/Android mobile apps
+- Tailwind CSS v4 for styling
 - Zod for client-side validation
 - Local storage for configuration persistence
 
@@ -33,6 +36,8 @@ Glassroot is a document management and semantic search application with an LLM c
 npm run dev           # Start both API and client in parallel
 npm run dev:api       # Start API only (wrangler dev)
 npm run dev:client    # Start client only (vite dev server)
+npm run dev:ios       # Run iOS app in simulator
+npm run dev:android   # Run Android app in emulator
 npm run build         # Build both workspaces
 npm run typecheck     # Type check both workspaces
 npm run lint          # Lint all files with Biome
@@ -40,16 +45,14 @@ npm run format        # Format all files with Biome
 npm run check         # Run both typecheck and lint
 ```
 
-### Individual workspace commands:
+### Mobile-specific commands:
 ```bash
-# API (from root)
-npm --workspace api run dev
-npm --workspace api run build
-
-# Client (from root)  
-npm --workspace client run dev
-npm --workspace client run build
-npm --workspace client run preview
+npm run build:ios      # Build and sync iOS app
+npm run build:android  # Build and sync Android app
+npm run open:ios       # Open Xcode
+npm run open:android   # Open Android Studio
+npm run sync           # Sync web assets to native projects
+npm run dev:shawniphone # Deploy to physical iPhone (custom script)
 ```
 
 ## Key Architecture Patterns
@@ -63,14 +66,30 @@ npm --workspace client run preview
 
 ### Client Architecture
 - Component-based React structure with pages and reusable components
-- Error boundaries and global error handling
-- Configuration panel overlay pattern
+- Custom chat UI built on @llamaindex/chat-ui with MarkdownEditor for compose input
+- Mobile viewport handling with Capacitor Keyboard plugin
+- Dynamic CSS variables for responsive layouts (`--viewport-height`, `--bottom-safe-area`)
+- Configuration panel overlay pattern using Sheet components
 - Theme persistence via CSS variables and localStorage
 - Offline state detection and handling
 
+### Chat Integration
+- Custom `useOpenRouterChat` hook handles LLM interactions
+- Direct client → OpenRouter API calls (no backend proxy)
+- Streaming SSE responses for real-time chat
+- System prompts stored in localStorage
+- Message formatting with double newlines for paragraphs
+
+### Mobile Considerations
+- Capacitor integration for native iOS/Android apps
+- Dynamic viewport resizing when keyboard appears
+- Safe area handling for iOS devices
+- Scroll-into-view behavior for focused inputs
+- Smooth transitions using CSS cubic-bezier easing
+
 ### Data Flow
 - Client → API for document operations (CRUD, search)
-- Client → OpenRouter directly for LLM interactions (no API proxy)
+- Client → OpenRouter directly for LLM interactions
 - Client caches API responses via TanStack Query
 - Local storage for user settings and draft preservation
 
@@ -96,10 +115,10 @@ D1 table `documents`:
 - Cloudflare bindings: `DB`, `VECTORS`, `AI`
 
 ### Client Settings (localStorage)
-- `theme`: "auto" | "light" | "dark"
-- `apiKey`: OpenRouter API key
-- `selectedModel`: Model identifier from OpenRouter
-- `systemPrompt`: Markdown system prompt for LLM
+- `theme`: "light" | "dark"
+- `openrouter_api_key`: OpenRouter API key
+- `openrouter_model`: Model identifier from OpenRouter
+- `llm_prompt`: Markdown system prompt for LLM
 
 ## Limits and Constraints
 
@@ -108,35 +127,14 @@ D1 table `documents`:
 - List documents: max 50 results
 - Search results: default 10, max 20
 - Embedding model: `@cf/baai/bge-base-en-v1.5`
+- Markdown editor: grows from 1 to max 10-24 lines dynamically
 
 ## Testing Strategy
 
 No automated test framework is currently configured. Manual testing covers:
 - API endpoints via health check and CRUD operations
 - Client functionality across all major workflows
+- Mobile app testing on iOS simulator and physical devices
 - Error handling and offline scenarios
 - Theme switching and configuration persistence
-
-## Available External Tools
-
-### ChatGPT (via Codex CLI)
-- **Command**: `codex exec "prompt"` - AI code generation and assistance using GPT-5
-- **Model**: GPT-5 with advanced reasoning capabilities
-- **Context Size**: 400,000 tokens total (272k input + 128k output)
-- **Best for**: 
-  - Multi-step reasoning and problem solving
-  - Advanced code generation and refactoring
-  - Mathematical problem solving (94.6% on AIME 2025)
-  - Real-world coding tasks (74.9% on SWE-bench Verified)
-  - Multimodal understanding and visual reasoning
-  - Complex debugging with step-by-step analysis
-- **Key Features**:
-  - 80% less likely to hallucinate than previous models
-  - Deliberate multi-step thinking process
-  - Built-in chain-of-thought reasoning
-  - State-of-the-art performance across coding benchmarks
-- **Usage Examples**:
-  - `codex exec "write a React hook for managing form state with validation"`
-  - `codex exec "refactor this component to use TypeScript and add error handling"`
-  - `codex exec "explain this algorithm step-by-step and suggest optimizations"`
-- **Alias**: Consider `alias cx="codex exec"` for quicker access
+- Keyboard handling and viewport adjustments on mobile
