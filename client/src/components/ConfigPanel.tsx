@@ -12,7 +12,7 @@ import {
 import { Eye, EyeOff } from "lucide-react";
 import { useEffect, useState } from "react";
 import ModelPicker from "./ModelPicker";
-import PromptEditor from "./PromptEditor";
+import { MarkdownEditor } from "./ui/markdown-editor";
 
 type Props = { onClose: () => void };
 
@@ -86,7 +86,13 @@ export default function ConfigPanel({ onClose }: Props) {
 						</div>
 						<div className="space-y-2">
 							<Label htmlFor="cfg_prompt">System Prompt (Markdown)</Label>
-							<PromptEditor value={prompt} onChange={setPrompt} />
+							<MarkdownEditor 
+								value={prompt} 
+								onChange={setPrompt}
+								placeholder="Enter your system prompt in Markdown..."
+								minLines={6}
+								maxLines={24}
+							/>
 						</div>
 					</div>
 				</div>

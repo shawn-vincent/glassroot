@@ -1,0 +1,55 @@
+/* client/src/styles/viewport.css */
+@layer viewport {
+  /* Dynamic viewport height with fallbacks */
+  :root {
+    --vh: 1vh;
+    --keyboard-height: 0px;
+    --safe-top: env(safe-area-inset-top);
+    --safe-bottom: env(safe-area-inset-bottom);
+    --safe-left: env(safe-area-inset-left);
+    --safe-right: env(safe-area-inset-right);
+  }
+
+  /* Use modern viewport units with fallbacks */
+  html {
+    height: 100vh;
+    height: 100dvh; /* Dynamic viewport height */
+    position: fixed;
+    width: 100%;
+  }
+
+  body {
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+    overscroll-behavior: none;
+    /* Prevent all zooming through touch-action */
+    touch-action: pan-x pan-y;
+  }
+
+  /* App container with keyboard awareness */
+  #root {
+    height: 100%;
+    height: calc(100dvh - var(--keyboard-height));
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* Allow pinch-zoom only on specific content */
+  .zoomable {
+    touch-action: pinch-zoom;
+  }
+
+  /* Ensure inputs don't trigger zoom */
+  input, textarea, select, button {
+    touch-action: manipulation;
+  }
+
+  /* Scrollable containers */
+  .scrollable {
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+  }
+}

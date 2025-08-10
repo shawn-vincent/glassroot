@@ -116,3 +116,27 @@ No automated test framework is currently configured. Manual testing covers:
 - Client functionality across all major workflows
 - Error handling and offline scenarios
 - Theme switching and configuration persistence
+
+## Available External Tools
+
+### ChatGPT (via Codex CLI)
+- **Command**: `codex exec "prompt"` - AI code generation and assistance using GPT-5
+- **Model**: GPT-5 with advanced reasoning capabilities
+- **Context Size**: 400,000 tokens total (272k input + 128k output)
+- **Best for**: 
+  - Multi-step reasoning and problem solving
+  - Advanced code generation and refactoring
+  - Mathematical problem solving (94.6% on AIME 2025)
+  - Real-world coding tasks (74.9% on SWE-bench Verified)
+  - Multimodal understanding and visual reasoning
+  - Complex debugging with step-by-step analysis
+- **Key Features**:
+  - 80% less likely to hallucinate than previous models
+  - Deliberate multi-step thinking process
+  - Built-in chain-of-thought reasoning
+  - State-of-the-art performance across coding benchmarks
+- **Usage Examples**:
+  - `codex exec "write a React hook for managing form state with validation"`
+  - `codex exec "refactor this component to use TypeScript and add error handling"`
+  - `codex exec "explain this algorithm step-by-step and suggest optimizations"`
+- **Alias**: Consider `alias cx="codex exec"` for quicker access

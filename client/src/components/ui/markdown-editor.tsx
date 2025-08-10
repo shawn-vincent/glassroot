@@ -1,28 +1,43 @@
 import { EditorView } from "@codemirror/view";
+import { markdown } from "@codemirror/lang-markdown";
 import { githubDark, githubLight } from "@uiw/codemirror-theme-github";
 import CodeMirror, { Extension } from "@uiw/react-codemirror";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 
-interface CodeEditorProps {
+interface MarkdownEditorProps {
 	value: string;
 	onChange?: (value: string) => void;
 	height?: string;
+	minLines?: number;
+	maxLines?: number;
 	extensions?: Extension[];
 	placeholder?: string;
 	editable?: boolean;
 	className?: string;
 }
 
-export function CodeEditor({
+export function MarkdownEditor({
 	value,
 	onChange,
-	height = "auto",
+	height,
+	minLines = 1,
+	maxLines = 24,
 	extensions = [],
-	placeholder,
+	placeholder = "Enter text in Markdown...",
 	editable = true,
 	className,
-}: CodeEditorProps) {
+}: MarkdownEditorProps) {
 	const [theme, setTheme] = useState<"light" | "dark">("light");
+	
+	// Calculate dynamic height based on content
+	const calculatedHeight = useMemo(() => {
+		if (height) return height; // Use explicit height if provided
+		
+		const lines = value.split("\n").length;
+		// Add 1 extra line for better UX when typing
+		const totalLines = Math.min(maxLines, Math.max(minLines, lines + 1));
+		return `${totalLines * 20}px`;
+	}, [value, height, minLines, maxLines]);
 
 	useEffect(() => {
 		// Check for dark mode class on documentElement
@@ -43,8 +58,9 @@ export function CodeEditor({
 		return () => observer.disconnect();
 	}, []);
 
-	// Configure editor extensions for line wrapping, no line numbers, and proportional font
+	// Configure editor extensions with markdown by default
 	const editorExtensions = [
+		markdown(), // Always include markdown highlighting
 		...extensions,
 		EditorView.lineWrapping,
 		EditorView.theme({
@@ -63,7 +79,7 @@ export function CodeEditor({
 	return (
 		<CodeMirror
 			value={value}
-			height={height}
+			height={calculatedHeight}
 			extensions={editorExtensions}
 			onChange={onChange}
 			theme={theme === "dark" ? githubDark : githubLight}
