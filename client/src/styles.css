@@ -212,36 +212,56 @@
 		color: var(--text);
 	}
 	
-	.prose-chat :where(code):not(pre code) {
+	/* Override llamaindex chat-ui markdown styles */
+	.lama-chat-message-content :where(code):not(pre code) {
 		@apply rounded-md px-1.5 py-0.5 font-mono text-sm border;
-		background-color: var(--code-bg);
+		background-color: var(--code-bg) !important;
 		border-color: var(--code-border);
+		color: var(--text);
 	}
 	
-	.prose-chat pre {
-		@apply rounded-lg p-4 overflow-x-auto border;
-		background-color: var(--code-bg);
+	.lama-chat-message-content pre {
+		@apply rounded-lg p-4 border;
+		background-color: var(--code-bg) !important;
 		border-color: var(--code-border);
+		overflow-x: auto !important;
+		max-width: 100%;
 	}
 	
-	.prose-chat pre code {
+	.lama-chat-message-content pre code {
 		@apply bg-transparent border-0 p-0;
 		@apply text-sm;
+		color: var(--text) !important;
+		white-space: pre !important;
+		word-break: normal !important;
+		overflow-wrap: normal !important;
 	}
 	
-	/* Nested code blocks */
-	@supports (background: color-mix(in srgb, white 10%, black)) {
-		.prose-chat pre code pre code {
-			background: color-mix(in srgb, var(--code-bg) 92%, black 8%);
-		}
+	/* Ensure code blocks have horizontal scroll */
+	.lama-chat-message-content .code-block {
+		overflow-x: auto !important;
+		max-width: 100%;
+	}
+	
+	/* Scale images and mermaid diagrams to fit */
+	.lama-chat-message-content img,
+	.lama-chat-message-content svg {
+		max-width: 100% !important;
+		height: auto !important;
+	}
+	
+	/* Mermaid specific scaling */
+	.mermaid-diagram-container svg {
+		max-width: 100% !important;
+		height: auto !important;
 	}
 	
 	/* Links in chat */
-	.prose-chat a {
+	.lama-chat-message-content a {
 		@apply underline transition-colors;
 		color: var(--accent);
 	}
-	.prose-chat a:hover {
+	.lama-chat-message-content a:hover {
 		color: var(--accent-muted);
 	}
 	

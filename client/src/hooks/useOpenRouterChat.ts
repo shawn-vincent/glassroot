@@ -27,7 +27,13 @@ function nanoid() {
 }
 
 export function useOpenRouterChat(): ChatHandler {
-	const [messages, setMessages] = useState<Message[]>([]);
+	const [messages, setMessages] = useState<Message[]>([
+		{
+			id: nanoid(),
+			role: "system",
+			content: "Welcome to Glassroot. Start a conversation to explore your knowledge base."
+		}
+	]);
 	const [input, setInput] = useState("");
 	const [isLoading, setIsLoading] = useState(false);
 	const abortControllerRef = useRef<AbortController | null>(null);
@@ -68,9 +74,17 @@ export function useOpenRouterChat(): ChatHandler {
 				.filter(m => ["user", "assistant", "system"].includes(m.role))
 				.map(m => ({ role: m.role as "user" | "assistant" | "system", content: m.content }));
 			
-			// Add system prompt if provided
-			if (systemPrompt && !apiMessages.some(m => m.role === "system")) {
-				apiMessages.unshift({ role: "system", content: systemPrompt });
+			// Add custom system prompt from settings if provided (in addition to any existing system messages)
+			if (systemPrompt) {
+				// Check if we already have a system message at the beginning
+				const hasInitialSystemMessage = apiMessages.length > 0 && apiMessages[0].role === "system";
+				if (hasInitialSystemMessage) {
+					// Append the custom prompt to the existing system message
+					apiMessages[0].content = `${apiMessages[0].content}\n\n${systemPrompt}`;
+				} else {
+					// Add as a new system message at the beginning
+					apiMessages.unshift({ role: "system", content: systemPrompt });
+				}
 			}
 
 			// Create new AbortController for this request

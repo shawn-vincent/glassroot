@@ -39,8 +39,9 @@ export function ChatMessage({
   
   // Determine alignment and styling based on role
   const isAlignedRight = role === 'self'
-  const isAlignedCenter = role === 'system'
+  const isAlignedCenter = role === 'system' // System messages have centered bubble
   const isError = role === 'error'
+  const isSystem = role === 'system'
   const hasAccent = accent && (role === 'self' || role === 'assistant')
   
   // Create wrapper div with accent class for proper scoping
@@ -67,9 +68,9 @@ export function ChatMessage({
       // Alignment
       'ml-auto mr-0 animate-slide-in-right': isAlignedRight,
       'mr-auto ml-0 animate-slide-in-left': !isAlignedRight && !isAlignedCenter && !isError,
-      'mx-auto text-center max-w-md': isAlignedCenter,
-      // System messages get dashed border and italic
-      'border-dashed italic': isAlignedCenter,
+      'mx-auto max-w-md': isAlignedCenter, // Center bubble but not text
+      // System messages get dashed border
+      'border-dashed': isSystem,
       // Streaming animation
       'animate-pulse-soft': isStreaming,
     },
@@ -79,7 +80,7 @@ export function ChatMessage({
   // Compute dynamic styles based on role and accent
   const bubbleStyles = getBubbleStyles({
     accent: hasAccent ? accent : undefined,
-    variant: isError ? 'error' : isAlignedCenter ? 'system' : 'default'
+    variant: isError ? 'error' : isSystem ? 'system' : 'default'
   })
   
   const containerClasses = cn(
