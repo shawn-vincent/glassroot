@@ -1,5 +1,6 @@
 import type React from 'react'
 import { cn } from '@/lib/utils'
+import { getBubbleStyles } from '@/lib/bubble-styles'
 import { AlertTriangle, AlertCircle, Copy, RotateCw, ChevronDown, ChevronUp } from 'lucide-react'
 import { Button } from './ui/button'
 import { useState } from 'react'
@@ -76,23 +77,17 @@ export function ChatMessage({
   )
   
   // Compute dynamic styles based on role and accent
-  const bubbleStyles: React.CSSProperties = {
-    backgroundColor: hasAccent ? 'var(--accent-soft)' :
-                     isError ? 'var(--error-bg)' :
-                     isAlignedCenter ? 'var(--bg-alt)' :
-                     'var(--bg-alt)',
-    borderColor: hasAccent ? 'var(--accent)' :
-                 isError ? 'var(--error-border)' :
-                 'var(--border)',
-    color: isError ? 'var(--error)' : 'var(--text)'
-  }
+  const bubbleStyles = getBubbleStyles({
+    accent: hasAccent ? accent : undefined,
+    variant: isError ? 'error' : isAlignedCenter ? 'system' : 'default'
+  })
   
   const containerClasses = cn(
-    'flex gap-3 px-4 py-2',
+    'flex gap-3 py-2',
     {
-      'justify-end': isAlignedRight,
-      'justify-center': isAlignedCenter,
-      'justify-start': !isAlignedRight && !isAlignedCenter,
+      'justify-end pl-12 pr-4': isAlignedRight,
+      'justify-center px-4': isAlignedCenter,
+      'justify-start pl-4 pr-12': !isAlignedRight && !isAlignedCenter,
     }
   )
   
@@ -104,7 +99,7 @@ export function ChatMessage({
   return (
     <div className={containerClasses}>
       <div className={wrapperClasses}>
-        <div className="flex flex-col gap-1 max-w-bubble w-full">
+        <div className="flex flex-col gap-1 max-w-bubble">
         {/* Message bubble */}
         <div className={bubbleClasses} style={bubbleStyles}>
           {/* Name and time inside bubble */}

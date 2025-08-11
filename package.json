@@ -8,6 +8,7 @@
 		"dev:client": "npm --workspace client run dev",
 		"dev:ios": "npm --workspace client run dev:ios",
 		"dev:android": "npm --workspace client run dev:android",
+		"dev:shawniphone": "npm --workspace client run dev:shawniphone",
 		"build": "npm -w api run build && npm -w client run build",
 		"build:api": "npm --workspace api run build",
 		"build:client": "npm --workspace client run build",

@@ -161,8 +161,19 @@ export function ChatSection() {
       </div>
       
       {/* Input - inherits user accent from parent */}
-      <div className="border-t border-[var(--border)] glass-subtle">
-        <CustomChatInput />
+      <div className={cn(
+        "border-t border-[var(--border)] glass-subtle",
+        userAccent && {
+          'accent-blue': userAccent === 'blue',
+          'accent-green': userAccent === 'green',
+          'accent-purple': userAccent === 'purple',
+          'accent-orange': userAccent === 'orange',
+          'accent-pink': userAccent === 'pink',
+          'accent-teal': userAccent === 'teal',
+          'accent-neutral': userAccent === 'neutral',
+        }
+      )}>
+        <CustomChatInput userAccent={userAccent} />
       </div>
     </ChatSectionUI>
     </div>

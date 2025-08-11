@@ -2,8 +2,14 @@ import { ChatInput, useChatUI } from "@llamaindex/chat-ui";
 import { MarkdownEditor } from "./ui/markdown-editor";
 import { IconButton } from "./ui/icon-button";
 import { ArrowUp } from "lucide-react";
+import { getBubbleStyles } from '@/lib/bubble-styles';
+import type { AccentColor } from './ChatMessage';
 
-export function CustomChatInput() {
+interface CustomChatInputProps {
+	userAccent?: AccentColor;
+}
+
+export function CustomChatInput({ userAccent }: CustomChatInputProps) {
 	const { input, setInput, append, isLoading } = useChatUI();
 
 	const handleSubmit = async (e: React.FormEvent) => {
@@ -25,10 +31,13 @@ export function CustomChatInput() {
 		<ChatInput>
 			<form 
 				onSubmit={handleSubmit}
-				className="flex items-end gap-3 p-4 pb-safe-keyboard"
+				className="p-4 pb-safe-keyboard"
 			>
-				<div className="flex-1 relative group">
-					<div className="rounded-bubble border transition-all duration-200 focus-within:shadow-lg" style={{ borderColor: 'var(--border)', backgroundColor: 'var(--bg)' }}>
+				<div className="relative group">
+					<div 
+						className={`rounded-bubble transition-all duration-200 focus-within:shadow-lg flex items-end ${userAccent ? 'border-2' : 'border'}`}
+						style={getBubbleStyles({ accent: userAccent })}
+					>
 						<MarkdownEditor
 							value={input}
 							onChange={setInput}
@@ -36,23 +45,27 @@ export function CustomChatInput() {
 							minLines={1}
 							maxLines={10}
 							editable={!isLoading}
-							className="w-full px-4 py-3 pr-12"
+							className="flex-1 px-3 py-2.5"
 						/>
+						<div className="pr-2 pb-2">
+							<IconButton 
+								type="submit" 
+								disabled={isLoading || !input.trim()}
+								variant="default"
+								size="sm"
+								className="flex-shrink-0 rounded-full w-8 h-8 disabled:opacity-50 transition-all duration-200 hover:scale-110 shadow-md"
+								style={{ backgroundColor: 'var(--accent)', borderColor: 'var(--accent)' }}
+								onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--accent-muted)' }}
+								onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'var(--accent)' }}
+							>
+								<ArrowUp size={18} style={{ color: 'var(--accent-contrast)' }} />
+							</IconButton>
+						</div>
 					</div>
-					<div className="absolute inset-0 rounded-bubble opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-none" style={{ background: 'linear-gradient(to right, transparent, color-mix(in srgb, var(--accent) 5%, transparent), transparent)' }} />
+					{userAccent && (
+						<div className="absolute inset-0 rounded-bubble opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-none" style={{ background: 'linear-gradient(to right, transparent, color-mix(in srgb, var(--accent) 5%, transparent), transparent)' }} />
+					)}
 				</div>
-				<IconButton 
-					type="submit" 
-					disabled={isLoading || !input.trim()}
-					variant="default"
-					size="sm"
-					className="flex-shrink-0 rounded-full w-10 h-10 disabled:opacity-50 transition-all duration-200 hover:scale-110 shadow-lg border-2"
-					style={{ backgroundColor: 'var(--accent)', borderColor: 'var(--accent)' }}
-					onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--accent-muted)' }}
-					onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'var(--accent)' }}
-				>
-					<ArrowUp size={20} style={{ color: 'var(--accent-contrast)' }} />
-				</IconButton>
 			</form>
 		</ChatInput>
 		</div>
