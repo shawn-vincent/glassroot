@@ -1,8 +1,14 @@
 import { useEffect } from 'react';
 import { Keyboard } from '@capacitor/keyboard';
+import { Capacitor } from '@capacitor/core';
 
 export function useCapacitorKeyboard() {
   useEffect(() => {
+    // Skip Capacitor keyboard handling on web
+    if (!Capacitor.isNativePlatform()) {
+      return;
+    }
+    
     let currentKeyboardHeight = 0;
     
     const updateViewportHeight = (keyboardHeight: number) => {

@@ -4,11 +4,14 @@ type JSONValue = null | string | number | boolean | {
 	[value: string]: JSONValue;
 } | JSONValue[];
 
+export type MessageStatus = "draft" | "paused" | "active" | "completed" | "cancelled" | "failed";
+
 export type Message = {
 	id?: string;
 	role: "user" | "assistant" | "system" | "data";
 	content: string;
 	annotations?: JSONValue[];
+	status?: MessageStatus;
 };
 
 export type ChatHandler = {
@@ -63,6 +66,7 @@ export function useOpenRouterChat(): ChatHandler {
 					id: nanoid(),
 					role: "assistant",
 					content: "Please configure your OpenRouter API key in settings.",
+					status: "failed",
 				};
 				setMessages((prev) => [...prev, errorMessage]);
 				setIsLoading(false);
@@ -172,6 +176,7 @@ export function useOpenRouterChat(): ChatHandler {
 						id: nanoid(),
 						role: "assistant",
 						content: `Error: ${error instanceof Error ? error.message : String(error)}`,
+						status: "failed",
 					};
 					setMessages((prev) => [...prev, errorMessage]);
 				}

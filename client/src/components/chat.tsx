@@ -26,7 +26,10 @@ export function ChatSection() {
   }, [])
   
   // Map message roles for our beautiful UI
-  const mapMessageRole = (role: string): MessageRole => {
+  const mapMessageRole = (role: string, status?: string): MessageRole => {
+    if (status === 'failed') {
+      return 'error'
+    }
     switch (role) {
       case 'user':
         return 'self'
@@ -46,6 +49,28 @@ export function ChatSection() {
     if (role === 'user') return userAccent
     if (role === 'assistant') return aiAccent
     return undefined
+  }
+
+  // Retry failed message
+  const handleRetry = (messageIndex: number) => {
+    // Find the last user message before this failed message
+    let lastUserMessageIndex = -1
+    for (let i = messageIndex - 1; i >= 0; i--) {
+      if (handler.messages[i].role === 'user') {
+        lastUserMessageIndex = i
+        break
+      }
+    }
+    
+    if (lastUserMessageIndex !== -1) {
+      // Remove all messages from the failed message onward
+      const newMessages = handler.messages.slice(0, messageIndex)
+      handler.setMessages(newMessages)
+      
+      // Resend the last user message
+      const lastUserMessage = handler.messages[lastUserMessageIndex]
+      handler.append(lastUserMessage)
+    }
   }
   
   // Apply accent class based on user selection
@@ -69,10 +94,11 @@ export function ChatSection() {
       {/* Messages container */}
       <div className="flex-1 overflow-y-auto scrollable-content py-4 space-y-2">
         {handler.messages.map((message, index) => {
-          const role = mapMessageRole(message.role)
+          const role = mapMessageRole(message.role, message.status)
           const accent = getMessageAccent(message.role)
           const isLast = index === handler.messages.length - 1
           const isStreaming = isLast && handler.isLoading && message.role === 'assistant'
+          const isFailed = message.status === 'failed'
           
           return (
             <ChatMessage
@@ -85,6 +111,7 @@ export function ChatSection() {
                 minute: '2-digit' 
               })}
               isStreaming={isStreaming}
+              onRetry={isFailed ? () => handleRetry(index) : undefined}
             >
               <MarkdownContent content={message.content} />
             </ChatMessage>

@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
 import mermaid from 'mermaid'
-import { Check, Copy, Download, AlertCircle } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard'
+import { AlertCircle, Zap } from 'lucide-react'
+import { CodeBlockHeader } from './CodeBlockHeader'
 import { cn } from '@/lib/utils'
 
 interface MermaidRendererProps {
   code: string
   className?: string
+  onFullscreen?: (content: React.ReactNode, title: string) => void
 }
 
 let mermaidInitialized = false
@@ -21,12 +21,11 @@ const generateRandomString = (length: number, lowercase = false) => {
   return lowercase ? result.toLowerCase() : result
 }
 
-export function MermaidRenderer({ code, className }: MermaidRendererProps) {
+export function MermaidRenderer({ code, className, onFullscreen }: MermaidRendererProps) {
   const [svg, setSvg] = useState<string>('')
   const [error, setError] = useState<string>('')
   const containerRef = useRef<HTMLDivElement>(null)
   const idRef = useRef(`mermaid-${Math.random().toString(36).substr(2, 9)}`)
-  const { isCopied, copyToClipboard } = useCopyToClipboard({ timeout: 2000 })
 
   useEffect(() => {
     if (!mermaidInitialized) {
@@ -90,72 +89,30 @@ export function MermaidRenderer({ code, className }: MermaidRendererProps) {
     renderDiagram()
   }, [code])
 
-  const downloadAsFile = () => {
-    if (typeof window === 'undefined') {
-      return
-    }
+  const downloadSvgAsImage = (): { label: string; filename: string; content: Blob } | null => {
+    if (!svg) return null
     
-    // Download the mermaid code as .mmd file
-    const suggestedFileName = `diagram-${generateRandomString(3, true)}.mmd`
-    const fileName = window.prompt('Enter file name', suggestedFileName)
-
-    if (!fileName) {
-      return
+    const svgBlob = new Blob([svg], { type: 'image/svg+xml' })
+    return {
+      label: 'Download as SVG image',
+      filename: `diagram-${generateRandomString(3, true)}.svg`,
+      content: svgBlob
     }
-
-    const blob = new Blob([code], { type: 'text/plain' })
-    const url = URL.createObjectURL(blob)
-    const link = document.createElement('a')
-    link.download = fileName
-    link.href = url
-    link.style.display = 'none'
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-    URL.revokeObjectURL(url)
-  }
-
-  const onCopy = () => {
-    if (isCopied) return
-    copyToClipboard(code)
   }
 
   if (error) {
     return (
       <div className={cn(
-        'codeblock border-border relative w-full rounded-lg border bg-[#fafafa] py-2',
+        'relative w-full rounded-lg border',
         className
-      )}>
-        <div className="flex w-full items-center justify-between px-4 py-2 border-b border-code-border">
-          <span className="text-xs font-medium flex items-center gap-1.5" style={{ color: 'var(--error)' }}>
-            <AlertCircle className="w-3 h-3" />
-            mermaid error
-          </span>
-          <div className="flex items-center space-x-1">
-            <Button
-              variant="ghost"
-              onClick={downloadAsFile}
-              size="icon"
-              className="size-8"
-            >
-              <Download className="size-4" />
-              <span className="sr-only">Download</span>
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={onCopy}
-              className="size-8"
-            >
-              {isCopied ? (
-                <Check className="size-4" />
-              ) : (
-                <Copy className="size-4" />
-              )}
-              <span className="sr-only">Copy code</span>
-            </Button>
-          </div>
-        </div>
+      )}
+      style={{ backgroundColor: 'var(--code-bg)', borderColor: 'var(--code-border)' }}>
+        <CodeBlockHeader
+          title="mermaid error"
+          language="mermaid"
+          code={code}
+          icon={<AlertCircle className="w-3 h-3" />}
+        />
         <div className="px-4 py-3">
           <p className="text-sm mb-3 font-medium" style={{ color: 'var(--error)' }}>{error}</p>
           <details className="group">
@@ -171,52 +128,70 @@ export function MermaidRenderer({ code, className }: MermaidRendererProps) {
     )
   }
 
+  const mermaidIcon = <Zap className="w-3 h-3" />
+
+  const diagramContainer = (
+    <div 
+      ref={containerRef}
+      className="mermaid-diagram-container p-6 flex justify-center overflow-x-auto rounded-b-lg"
+      style={{ backgroundColor: 'var(--bg)', maxWidth: '100%' }}
+    >
+      <div 
+        className="max-w-full"
+        style={{ maxWidth: '100%', overflow: 'hidden' }}
+        dangerouslySetInnerHTML={{ __html: svg.replace('<svg', '<svg style="max-width: 100%; height: auto; display: block;"') }}
+      />
+    </div>
+  )
+
+  const customDownloads = []
+  const svgDownload = downloadSvgAsImage()
+  if (svgDownload) {
+    customDownloads.push(svgDownload)
+  }
+
   return (
     <div className={cn(
-      'relative w-full rounded-bubble border',
+      'relative w-full rounded-lg border',
       'transition-all duration-200 hover:shadow-lg',
       className
     )}
-    style={{ backgroundColor: 'var(--code-bg)', borderColor: 'var(--code-border)' }}>
-      <div className="flex w-full items-center justify-between px-4 py-2 border-b" style={{ borderColor: 'var(--code-border)', backgroundColor: 'color-mix(in srgb, var(--bg-alt) 50%, transparent)' }}>
-        <span className="text-xs font-medium flex items-center gap-1.5" style={{ color: 'var(--accent)' }}>
-          <svg className="w-3 h-3" viewBox="0 0 24 24" fill="currentColor">
-            <title>Mermaid diagram icon</title>
-            <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z"/>
-          </svg>
-          mermaid diagram
-        </span>
-        <div className="flex items-center space-x-1">
-          <Button
-            variant="ghost"
-            onClick={downloadAsFile}
-            size="icon"
-            className="size-8"
-          >
-            <Download className="size-4" />
-            <span className="sr-only">Download</span>
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onCopy}
-            className="size-8"
-          >
-            {isCopied ? (
-              <Check className="size-4" />
-            ) : (
-              <Copy className="size-4" />
-            )}
-            <span className="sr-only">Copy code</span>
-          </Button>
-        </div>
-      </div>
-      <div 
-        ref={containerRef}
-        className="mermaid-diagram-container p-6 flex justify-center overflow-x-auto rounded-b-bubble"
-        style={{ backgroundColor: 'var(--bg)' }}
-        dangerouslySetInnerHTML={{ __html: svg }}
+    style={{ 
+      backgroundColor: 'var(--code-bg)', 
+      borderColor: 'var(--code-border)',
+      maxWidth: '100%',
+      overflow: 'hidden'
+    }}>
+      <CodeBlockHeader
+        title="mermaid diagram"
+        language="mermaid"
+        code={code}
+        icon={mermaidIcon}
+        customDownloads={customDownloads}
+        onFullscreen={() => onFullscreen?.(
+          <div className="bg-white p-8 rounded-lg max-w-full max-h-full overflow-auto">
+            <div 
+              style={{ maxWidth: '100%', overflow: 'hidden' }}
+              dangerouslySetInnerHTML={{ __html: svg.replace('<svg', '<svg style="max-width: 100%; height: auto; display: block;"') }} 
+            />
+          </div>,
+          'Mermaid Diagram'
+        )}
       />
+      <div 
+        className="cursor-pointer"
+        onClick={() => onFullscreen?.(
+          <div className="bg-white p-8 rounded-lg max-w-full max-h-full overflow-auto">
+            <div 
+              style={{ maxWidth: '100%', overflow: 'hidden' }}
+              dangerouslySetInnerHTML={{ __html: svg.replace('<svg', '<svg style="max-width: 100%; height: auto; display: block;"') }} 
+            />
+          </div>,
+          'Mermaid Diagram'
+        )}
+      >
+        {diagramContainer}
+      </div>
     </div>
   )
 }

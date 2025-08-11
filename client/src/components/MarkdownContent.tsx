@@ -3,6 +3,9 @@ import remarkGfm from 'remark-gfm'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
 import { oneDark, oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism'
 import { MermaidRenderer } from './MermaidRenderer'
+import { CodeBlockHeader } from './CodeBlockHeader'
+import { FullscreenPreview } from './FullscreenPreview'
+import { FullscreenTextRenderer } from './FullscreenTextRenderer'
 import { useEffect, useState } from 'react'
 
 interface MarkdownContentProps {
@@ -11,6 +14,10 @@ interface MarkdownContentProps {
 
 export function MarkdownContent({ content }: MarkdownContentProps) {
   const [isDark, setIsDark] = useState(false)
+  const [fullscreenContent, setFullscreenContent] = useState<{
+    content: React.ReactNode
+    title: string
+  } | null>(null)
   
   useEffect(() => {
     // Check theme on mount and when it changes
@@ -30,8 +37,9 @@ export function MarkdownContent({ content }: MarkdownContentProps) {
   }, [])
   
   return (
-    <div className="markdown-content">
-      <ReactMarkdown
+    <>
+      <div className="markdown-content">
+        <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         components={{
           code({ node, className, children, ...props }: any) {
@@ -41,32 +49,60 @@ export function MarkdownContent({ content }: MarkdownContentProps) {
             
             // Handle mermaid diagrams
             if (!inline && language === 'mermaid') {
-              return <MermaidRenderer code={String(children).replace(/\n$/, '')} />
+              return (
+                <MermaidRenderer 
+                  code={String(children).replace(/\n$/, '')}
+                  onFullscreen={(content, title) => setFullscreenContent({ content, title })}
+                />
+              )
             }
             
             // Handle code blocks with syntax highlighting
             if (!inline && language) {
+              const codeContent = String(children).replace(/\n$/, '')
+              
+              const codeBlock = (
+                <SyntaxHighlighter
+                  language={language}
+                  style={isDark ? oneDark : oneLight}
+                  customStyle={{
+                    margin: 0,
+                    borderRadius: '0 0 0.5rem 0.5rem',
+                    fontSize: '0.875rem',
+                    backgroundColor: 'var(--code-bg)',
+                    border: 'none',
+                    borderTop: '1px solid var(--code-border)',
+                    overflow: 'auto',
+                  }}
+                  codeTagProps={{
+                    style: {
+                      color: 'var(--text)',
+                    }
+                  }}
+                >
+                  {codeContent}
+                </SyntaxHighlighter>
+              )
+              
               return (
-                <div className="code-block-wrapper">
-                  <SyntaxHighlighter
+                <div className="relative w-full rounded-lg border"
+                     style={{ backgroundColor: 'var(--code-bg)', borderColor: 'var(--code-border)' }}>
+                  <CodeBlockHeader
+                    title={`${language} code`}
                     language={language}
-                    style={isDark ? oneDark : oneLight}
-                    customStyle={{
-                      margin: 0,
-                      borderRadius: '0.5rem',
-                      fontSize: '0.875rem',
-                      backgroundColor: 'var(--code-bg)',
-                      border: '1px solid var(--code-border)',
-                      overflow: 'auto',
-                    }}
-                    codeTagProps={{
-                      style: {
-                        color: 'var(--text)',
-                      }
-                    }}
-                  >
-                    {String(children).replace(/\n$/, '')}
-                  </SyntaxHighlighter>
+                    code={codeContent}
+                    onFullscreen={() => setFullscreenContent({
+                      content: (
+                        <FullscreenTextRenderer
+                          content={codeContent}
+                          language={language}
+                          title={`${language} code`}
+                        />
+                      ),
+                      title: `${language} code`
+                    })}
+                  />
+                  {codeBlock}
                 </div>
               )
             }
@@ -93,13 +129,17 @@ export function MarkdownContent({ content }: MarkdownContentProps) {
             }
             
             // Code block without language
-            return (
+            const plainCodeContent = String(children).replace(/\n$/, '')
+            
+            const plainCodeBlock = (
               <pre 
                 style={{
                   backgroundColor: 'var(--code-bg)',
-                  border: '1px solid var(--code-border)',
-                  borderRadius: '0.5rem',
+                  border: 'none',
+                  borderTop: '1px solid var(--code-border)',
+                  borderRadius: '0 0 0.5rem 0.5rem',
                   padding: '1rem',
+                  margin: 0,
                   overflow: 'auto',
                 }}
               >
@@ -108,14 +148,43 @@ export function MarkdownContent({ content }: MarkdownContentProps) {
                 </code>
               </pre>
             )
+            
+            return (
+              <div className="relative w-full rounded-lg border"
+                   style={{ backgroundColor: 'var(--code-bg)', borderColor: 'var(--code-border)' }}>
+                <CodeBlockHeader
+                  title="code"
+                  code={plainCodeContent}
+                  onFullscreen={() => setFullscreenContent({
+                    content: (
+                      <FullscreenTextRenderer
+                        content={plainCodeContent}
+                        title="code"
+                      />
+                    ),
+                    title: "code"
+                  })}
+                />
+                {plainCodeBlock}
+              </div>
+            )
           },
-          // Scale images to fit
+          // Scale images to fit and add click to fullscreen
           img({ src, alt, ...props }) {
             return (
               <img 
                 src={src} 
                 alt={alt} 
-                style={{ maxWidth: '100%', height: 'auto' }}
+                style={{ 
+                  maxWidth: '100%', 
+                  height: 'auto',
+                  cursor: 'pointer',
+                  borderRadius: '0.5rem'
+                }}
+                onClick={() => setFullscreenContent({
+                  content: <img src={src} alt={alt} style={{ maxWidth: '100%', height: 'auto' }} />,
+                  title: alt || 'Image'
+                })}
                 {...props}
               />
             )
@@ -146,5 +215,14 @@ export function MarkdownContent({ content }: MarkdownContentProps) {
         {content}
       </ReactMarkdown>
     </div>
+    
+    <FullscreenPreview
+      isOpen={!!fullscreenContent}
+      onClose={() => setFullscreenContent(null)}
+      title={fullscreenContent?.title}
+    >
+      {fullscreenContent?.content}
+    </FullscreenPreview>
+    </>
   )
 }
