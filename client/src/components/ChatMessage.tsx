@@ -40,6 +40,7 @@ export function ChatMessage({
   const isAlignedRight = role === 'self'
   const isAlignedCenter = role === 'system'
   const isError = role === 'error'
+  const hasAccent = accent && (role === 'self' || role === 'assistant')
   
   // Create wrapper div with accent class for proper scoping
   const wrapperClasses = cn(
@@ -60,14 +61,14 @@ export function ChatMessage({
     'text-sm leading-relaxed break-words',
     'border', // Always show border per spec
     {
-      // Self messages - accent tinted background with accent border (2px for emphasis)
-      'border-2 ml-auto mr-0 animate-slide-in-right': isAlignedRight,
-      // Other messages - alt background with subtle border
+      // Messages with accent get thicker border
+      'border-2': hasAccent || isError,
+      // Alignment
+      'ml-auto mr-0 animate-slide-in-right': isAlignedRight,
       'mr-auto ml-0 animate-slide-in-left': !isAlignedRight && !isAlignedCenter && !isError,
-      // System messages - centered with dashed border
-      'border-dashed italic mx-auto text-center max-w-md': isAlignedCenter,
-      // Error messages - error background and border
-      'border-2': isError,
+      'mx-auto text-center max-w-md': isAlignedCenter,
+      // System messages get dashed border and italic
+      'border-dashed italic': isAlignedCenter,
       // Streaming animation
       'animate-pulse-soft': isStreaming,
     },
@@ -76,11 +77,11 @@ export function ChatMessage({
   
   // Compute dynamic styles based on role and accent
   const bubbleStyles: React.CSSProperties = {
-    backgroundColor: isAlignedRight && accent ? 'var(--accent-soft)' :
-                     (!isAlignedRight && !isAlignedCenter && !isError) ? 'var(--bg-alt)' :
+    backgroundColor: hasAccent ? 'var(--accent-soft)' :
+                     isError ? 'var(--error-bg)' :
                      isAlignedCenter ? 'var(--bg-alt)' :
-                     isError ? 'var(--error-bg)' : undefined,
-    borderColor: isAlignedRight && accent ? 'var(--accent)' :
+                     'var(--bg-alt)',
+    borderColor: hasAccent ? 'var(--accent)' :
                  isError ? 'var(--error-border)' :
                  'var(--border)',
     color: isError ? 'var(--error)' : 'var(--text)'
@@ -113,7 +114,14 @@ export function ChatMessage({
               isAlignedCenter && 'justify-center'
             )}>
               {name && (
-                <span className="text-xs font-medium" style={{ color: 'var(--text-muted)' }}>
+                <span 
+                  className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border"
+                  style={{ 
+                    borderColor: accent ? 'var(--accent)' : 'var(--border)',
+                    color: accent ? 'var(--accent)' : 'var(--text-muted)',
+                    backgroundColor: accent ? 'var(--accent-soft)' : 'transparent'
+                  }}
+                >
                   {name}
                 </span>
               )}
