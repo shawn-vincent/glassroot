@@ -9,13 +9,14 @@ import { useOpenRouterChat } from '@/hooks/useOpenRouterChat'
 import { CustomChatInput } from './CustomChatInput'
 import { ChatMessage, type MessageRole, type AccentColor } from './ChatMessage'
 import { MarkdownContent } from './MarkdownContent'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { cn } from '@/lib/utils'
 
 export function ChatSection() {
   const handler = useOpenRouterChat()
   const [userAccent, setUserAccent] = useState<AccentColor>('blue')
   const [aiAccent, setAiAccent] = useState<AccentColor>('purple')
+  const messagesContainerRef = useRef<HTMLDivElement>(null)
   
   // Load accent colors from localStorage
   useEffect(() => {
@@ -24,6 +25,40 @@ export function ChatSection() {
     if (savedUserAccent) setUserAccent(savedUserAccent)
     if (savedAiAccent) setAiAccent(savedAiAccent)
   }, [])
+  
+  // Auto-scroll to bottom when messages change or loading state changes
+  useEffect(() => {
+    const scrollToBottom = () => {
+      const container = messagesContainerRef.current
+      if (!container) return
+      
+      // Check if user is near the bottom (within 150px threshold)
+      const threshold = 150
+      const distanceFromBottom = container.scrollHeight - container.scrollTop - container.clientHeight
+      const isNearBottom = distanceFromBottom < threshold
+      
+      // Always scroll for new conversations, when loading, or when near bottom
+      const shouldScroll = isNearBottom || handler.messages.length <= 1 || handler.isLoading
+      
+      if (shouldScroll) {
+        // Force scroll to absolute bottom
+        container.scrollTop = container.scrollHeight + 1000
+      }
+    }
+    
+    // Multiple attempts to ensure scroll happens after render
+    const attempts = [0, 50, 100, 200]
+    const timeouts: NodeJS.Timeout[] = []
+    
+    attempts.forEach(delay => {
+      const timeout = setTimeout(scrollToBottom, delay)
+      timeouts.push(timeout)
+    })
+    
+    return () => {
+      timeouts.forEach(clearTimeout)
+    }
+  }, [handler.messages, handler.isLoading])
   
   // Map message roles for our beautiful UI
   const mapMessageRole = (role: string, status?: string): MessageRole => {
@@ -92,7 +127,7 @@ export function ChatSection() {
     <div className={containerClasses} style={{ backgroundColor: 'var(--bg)' }}>
     <ChatSectionUI handler={handler}>
       {/* Messages container */}
-      <div className="flex-1 overflow-y-auto scrollable-content py-4 space-y-2">
+      <div ref={messagesContainerRef} className="flex-1 overflow-y-auto scrollable-content py-4 space-y-2">
         {handler.messages.map((message, index) => {
           const role = mapMessageRole(message.role, message.status)
           const accent = getMessageAccent(message.role)
