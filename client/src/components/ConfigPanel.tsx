@@ -10,10 +10,12 @@ import {
 	SheetHeader,
 	SheetTitle,
 } from "@/components/ui/sheet";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Palette } from "lucide-react";
 import { useEffect, useState } from "react";
 import ModelPicker from "./ModelPicker";
 import { MarkdownEditor } from "./ui/markdown-editor";
+import type { AccentColor } from "./ChatMessage";
+import { AccentColorPicker } from "./AccentColorPicker";
 
 type Props = { onClose: () => void };
 
@@ -22,18 +24,25 @@ export default function ConfigPanel({ onClose }: Props) {
 	const [model, setModel] = useState("");
 	const [prompt, setPrompt] = useState("");
 	const [show, setShow] = useState(false);
+	const [userAccent, setUserAccent] = useState<AccentColor>("blue");
+	const [aiAccent, setAiAccent] = useState<AccentColor>("purple");
 
 	useEffect(() => {
 		setApiKey(localStorage.getItem("openrouter_api_key") || "");
 		setModel(localStorage.getItem("openrouter_model") || "");
 		setPrompt(localStorage.getItem("llm_prompt") || "");
+		setUserAccent((localStorage.getItem("user_accent_color") as AccentColor) || "blue");
+		setAiAccent((localStorage.getItem("ai_accent_color") as AccentColor) || "purple");
 	}, []);
 
 	function save() {
 		localStorage.setItem("openrouter_api_key", apiKey.trim());
 		localStorage.setItem("openrouter_model", model.trim());
 		localStorage.setItem("llm_prompt", prompt);
-		onClose();
+		localStorage.setItem("user_accent_color", userAccent);
+		localStorage.setItem("ai_accent_color", aiAccent);
+		// Reload to apply new accent colors
+		window.location.reload();
 	}
 
 	return (
@@ -92,6 +101,28 @@ export default function ConfigPanel({ onClose }: Props) {
 								placeholder="Enter your system prompt in Markdown..."
 								minLines={6}
 								maxLines={24}
+							/>
+						</div>
+						
+						{/* Accent Color Pickers */}
+						<div className="space-y-4 border-t pt-4">
+							<h3 className="text-sm font-medium flex items-center gap-2">
+								<Palette className="w-4 h-4" />
+								Accent Colors
+							</h3>
+							
+							<AccentColorPicker
+								value={userAccent}
+								onChange={setUserAccent}
+								label="Your Accent Color"
+								description="This color will be used for your messages and the input field"
+							/>
+							
+							<AccentColorPicker
+								value={aiAccent}
+								onChange={setAiAccent}
+								label="AI Assistant Accent Color"
+								description="This color will be used for AI assistant messages"
 							/>
 						</div>
 					</div>

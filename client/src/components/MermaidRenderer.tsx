@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import mermaid from 'mermaid'
-import { Check, Copy, Download } from 'lucide-react'
+import { Check, Copy, Download, AlertCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard'
 import { cn } from '@/lib/utils'
@@ -30,22 +30,41 @@ export function MermaidRenderer({ code, className }: MermaidRendererProps) {
 
   useEffect(() => {
     if (!mermaidInitialized) {
+      // Get current theme
+      const isDark = document.documentElement.classList.contains('dark')
+      
       mermaid.initialize({
         startOnLoad: false,
-        theme: 'default',
+        theme: isDark ? 'dark' : 'base',
         securityLevel: 'loose',
-        themeVariables: {
+        themeVariables: isDark ? {
+          // Dark theme variables
+          darkMode: true,
+          primaryColor: '#3B82F6',
+          primaryTextColor: '#EAEAEA',
+          primaryBorderColor: '#3A3A3A',
+          lineColor: '#666666',
+          secondaryColor: '#1A1A1A',
+          tertiaryColor: '#2B2B2B',
+          background: '#0E0E0E',
+          mainBkg: '#1A1A1A',
+          secondBkg: '#2B2B2B',
+          tertiaryBkg: '#3A3A3A',
+          fontFamily: 'ui-sans-serif, system-ui, sans-serif',
+        } : {
+          // Light theme variables
           darkMode: false,
-          primaryColor: '#e5e7eb',
-          primaryTextColor: '#111827',
-          primaryBorderColor: '#d1d5db',
-          lineColor: '#6b7280',
-          secondaryColor: '#f3f4f6',
-          tertiaryColor: '#f9fafb',
-          background: '#ffffff',
-          mainBkg: '#ffffff',
-          secondBkg: '#f3f4f6',
-          tertiaryBkg: '#f9fafb',
+          primaryColor: '#007AFF',
+          primaryTextColor: '#1A1A1A',
+          primaryBorderColor: '#DDDDDD',
+          lineColor: '#666666',
+          secondaryColor: '#F7F7F7',
+          tertiaryColor: '#F0F0F0',
+          background: '#FFFFFF',
+          mainBkg: '#FFFFFF',
+          secondBkg: '#F7F7F7',
+          tertiaryBkg: '#F0F0F0',
+          fontFamily: 'ui-sans-serif, system-ui, sans-serif',
         },
       })
       mermaidInitialized = true
@@ -107,8 +126,11 @@ export function MermaidRenderer({ code, className }: MermaidRendererProps) {
         'codeblock border-border relative w-full rounded-lg border bg-[#fafafa] py-2',
         className
       )}>
-        <div className="flex w-full items-center justify-between px-4">
-          <span className="text-xs lowercase">mermaid (error)</span>
+        <div className="flex w-full items-center justify-between px-4 py-2 border-b border-code-border">
+          <span className="text-xs font-medium flex items-center gap-1.5" style={{ color: 'var(--error)' }}>
+            <AlertCircle className="w-3 h-3" />
+            mermaid error
+          </span>
           <div className="flex items-center space-x-1">
             <Button
               variant="ghost"
@@ -134,11 +156,16 @@ export function MermaidRenderer({ code, className }: MermaidRendererProps) {
             </Button>
           </div>
         </div>
-        <div className="px-4 py-2">
-          <p className="text-red-600 text-sm mb-2">{error}</p>
-          <pre className="text-xs bg-red-100 p-2 rounded overflow-x-auto">
-            <code>{code}</code>
-          </pre>
+        <div className="px-4 py-3">
+          <p className="text-sm mb-3 font-medium" style={{ color: 'var(--error)' }}>{error}</p>
+          <details className="group">
+            <summary className="text-xs cursor-pointer transition-colors" style={{ color: 'var(--text-muted)' }} onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--text)' }} onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--text-muted)' }}>
+              View source code
+            </summary>
+            <pre className="mt-2 text-xs border p-3 rounded-lg overflow-x-auto animate-fade-in" style={{ backgroundColor: 'var(--bg)', borderColor: 'var(--border)' }}>
+              <code style={{ color: 'var(--text-muted)' }}>{code}</code>
+            </pre>
+          </details>
         </div>
       </div>
     )
@@ -146,11 +173,19 @@ export function MermaidRenderer({ code, className }: MermaidRendererProps) {
 
   return (
     <div className={cn(
-      'codeblock border-border relative w-full rounded-lg border bg-[#fafafa] py-2',
+      'relative w-full rounded-bubble border',
+      'transition-all duration-200 hover:shadow-lg',
       className
-    )}>
-      <div className="flex w-full items-center justify-between px-4">
-        <span className="text-xs lowercase">mermaid</span>
+    )}
+    style={{ backgroundColor: 'var(--code-bg)', borderColor: 'var(--code-border)' }}>
+      <div className="flex w-full items-center justify-between px-4 py-2 border-b" style={{ borderColor: 'var(--code-border)', backgroundColor: 'color-mix(in srgb, var(--bg-alt) 50%, transparent)' }}>
+        <span className="text-xs font-medium flex items-center gap-1.5" style={{ color: 'var(--accent)' }}>
+          <svg className="w-3 h-3" viewBox="0 0 24 24" fill="currentColor">
+            <title>Mermaid diagram icon</title>
+            <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z"/>
+          </svg>
+          mermaid diagram
+        </span>
         <div className="flex items-center space-x-1">
           <Button
             variant="ghost"
@@ -178,7 +213,8 @@ export function MermaidRenderer({ code, className }: MermaidRendererProps) {
       </div>
       <div 
         ref={containerRef}
-        className="mermaid-diagram-container px-4 py-2 flex justify-center overflow-x-auto"
+        className="mermaid-diagram-container p-6 flex justify-center overflow-x-auto rounded-b-bubble"
+        style={{ backgroundColor: 'var(--bg)' }}
         dangerouslySetInnerHTML={{ __html: svg }}
       />
     </div>

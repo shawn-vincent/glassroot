@@ -30,7 +30,7 @@ export default function App() {
 	}, []);
 	return (
 		<div className="h-full flex flex-col">
-			<header className="flex-shrink-0 flex items-center justify-between px-4 py-3 md:py-3 border-b border-border bg-background z-10 pt-safe">
+			<header className="flex-shrink-0 flex items-center justify-between px-4 py-3 md:py-3 border-b border-[var(--border)] bg-background z-10 pt-safe">
 				<nav className="flex gap-2">
 					<Link to="/" title="Chat">
 						<IconButton selected={pathname === "/"}>
