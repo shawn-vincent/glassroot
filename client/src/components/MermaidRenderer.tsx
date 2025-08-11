@@ -69,24 +69,64 @@ export function MermaidRenderer({ code, className, onFullscreen }: MermaidRender
       mermaidInitialized = true
     }
 
+    // Skip empty or invalid code
+    if (!code || code.trim().length === 0) {
+      setError('No diagram code provided')
+      setSvg('')
+      return
+    }
+
+    let isCancelled = false
     const renderDiagram = async () => {
       try {
         setError('')
-        const { svg: renderedSvg } = await mermaid.render(idRef.current, code)
-        setSvg(renderedSvg)
-      } catch (err) {
-        console.error('Mermaid rendering error:', err)
-        setError('Failed to render diagram. Please check the syntax.')
-        setSvg('')
-        // Clean up any partial render attempts
-        const element = document.getElementById(idRef.current)
-        if (element) {
-          element.remove()
+        // Generate a unique ID for each render attempt
+        const uniqueId = `mermaid-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+        
+        // Clean up any existing element with the old ID
+        const oldElement = document.getElementById(idRef.current)
+        if (oldElement) {
+          oldElement.remove()
         }
+        
+        if (isCancelled) return
+        
+        const { svg: renderedSvg } = await mermaid.render(uniqueId, code)
+        
+        if (!isCancelled) {
+          setSvg(renderedSvg)
+          idRef.current = uniqueId
+        }
+      } catch (err: any) {
+        if (isCancelled) return
+        
+        // More specific error messages
+        const errorMessage = err?.message || 'Failed to render diagram'
+        if (errorMessage.includes('No diagram type detected')) {
+          setError('Invalid diagram type or syntax. Please check your Mermaid code.')
+        } else if (errorMessage.includes('Parse error')) {
+          setError('Syntax error in diagram. Please check your Mermaid syntax.')
+        } else {
+          setError('Failed to render diagram. Please check the syntax.')
+        }
+        setSvg('')
+        
+        // Clean up any partial render attempts with dynamic ID pattern
+        const mermaidElements = document.querySelectorAll('[id^="mermaid-"]')
+        mermaidElements.forEach(el => {
+          if (el.id.includes('output')) {
+            el.remove()
+          }
+        })
       }
     }
 
     renderDiagram()
+    
+    // Cleanup function
+    return () => {
+      isCancelled = true
+    }
   }, [code])
 
   const downloadSvgAsImage = (): { label: string; filename: string; content: Blob } | null => {

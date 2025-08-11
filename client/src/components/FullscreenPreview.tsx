@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { X, ZoomIn, ZoomOut, Maximize2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
@@ -87,11 +87,11 @@ export function FullscreenPreview({ isOpen, onClose, children, title }: Fullscre
     setIsDragging(false)
   }
 
-  const handleWheel = (e: React.WheelEvent) => {
+  const handleWheel = useCallback((e: WheelEvent) => {
     e.preventDefault()
     const delta = e.deltaY > 0 ? -0.1 : 0.1
     setScale(prev => Math.max(0.25, Math.min(5, prev + delta)))
-  }
+  }, [])
 
   // Handle touch events for mobile
   const handleTouchStart = (e: React.TouchEvent) => {
@@ -119,6 +119,18 @@ export function FullscreenPreview({ isOpen, onClose, children, title }: Fullscre
   const handleTouchEnd = () => {
     setIsDragging(false)
   }
+
+  // Add non-passive wheel event listener
+  useEffect(() => {
+    const container = containerRef.current
+    if (!container || !isOpen) return
+
+    container.addEventListener('wheel', handleWheel, { passive: false })
+    
+    return () => {
+      container.removeEventListener('wheel', handleWheel)
+    }
+  }, [isOpen, handleWheel])
 
   if (!isOpen) return null
 
@@ -196,7 +208,6 @@ export function FullscreenPreview({ isOpen, onClose, children, title }: Fullscre
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
-        onWheel={handleWheel}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
