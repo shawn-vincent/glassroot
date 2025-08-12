@@ -52,9 +52,9 @@ export function AccentColorPicker({ value, onChange, label, description }: Accen
   return (
     <div className="space-y-2">
       {label && (
-        <label className="text-sm font-medium" style={{ color: 'var(--text)' }}>
+        <div className="text-sm font-medium" style={{ color: 'var(--text)' }}>
           {label}
-        </label>
+        </div>
       )}
       <div className="flex gap-2 flex-wrap">
         {accentColors.map((color) => {
@@ -63,6 +63,7 @@ export function AccentColorPicker({ value, onChange, label, description }: Accen
           
           return (
             <button
+              type="button"
               key={color}
               onClick={() => onChange(color)}
               className={cn(

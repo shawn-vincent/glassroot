@@ -50,13 +50,15 @@ export function ChatSection() {
     const attempts = [0, 50, 100, 200]
     const timeouts: ReturnType<typeof setTimeout>[] = []
     
-    attempts.forEach(delay => {
+    for (const delay of attempts) {
       const timeout = setTimeout(scrollToBottom, delay)
       timeouts.push(timeout)
-    })
+    }
     
     return () => {
-      timeouts.forEach(clearTimeout)
+      for (const timeout of timeouts) {
+        clearTimeout(timeout)
+      }
     }
   }, [handler.messages, handler.isLoading])
   
@@ -137,7 +139,7 @@ export function ChatSection() {
           
           return (
             <ChatMessage
-              key={index}
+              key={`msg-${index}-${message.role}-${message.content.substring(0, 20)}`}
               role={role}
               accent={accent}
               name={message.role === 'assistant' ? 'AI Assistant' : message.role === 'user' ? 'You' : message.role === 'system' ? 'System' : undefined}

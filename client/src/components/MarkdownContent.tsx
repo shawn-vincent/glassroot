@@ -42,6 +42,7 @@ export function MarkdownContent({ content }: MarkdownContentProps) {
         <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         components={{
+          // biome-ignore lint/suspicious/noExplicitAny: ReactMarkdown component types require any
           code({ node, className, children, ...props }: any) {
             const match = /language-(\w+)/.exec(className || '')
             const language = match?.[1]
@@ -173,8 +174,9 @@ export function MarkdownContent({ content }: MarkdownContentProps) {
           img({ src, alt, ...props }) {
             return (
               <img 
+                {...props}
                 src={src} 
-                alt={alt} 
+                alt={alt || ''} 
                 style={{ 
                   maxWidth: '100%', 
                   height: 'auto',
@@ -182,10 +184,9 @@ export function MarkdownContent({ content }: MarkdownContentProps) {
                   borderRadius: '0.5rem'
                 }}
                 onClick={() => setFullscreenContent({
-                  content: <img src={src} alt={alt} style={{ maxWidth: '100%', height: 'auto' }} />,
+                  content: <img src={src} alt={alt || ''} style={{ maxWidth: '100%', height: 'auto' }} />,
                   title: alt || 'Image'
                 })}
-                {...props}
               />
             )
           },

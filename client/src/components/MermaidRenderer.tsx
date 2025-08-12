@@ -97,11 +97,11 @@ export function MermaidRenderer({ code, className, onFullscreen }: MermaidRender
           setSvg(renderedSvg)
           idRef.current = uniqueId
         }
-      } catch (err: any) {
+      } catch (err: unknown) {
         if (isCancelled) return
         
         // More specific error messages
-        const errorMessage = err?.message || 'Failed to render diagram'
+        const errorMessage = err instanceof Error ? err.message : 'Failed to render diagram'
         if (errorMessage.includes('No diagram type detected')) {
           setError('Invalid diagram type or syntax. Please check your Mermaid code.')
         } else if (errorMessage.includes('Parse error')) {
@@ -113,11 +113,11 @@ export function MermaidRenderer({ code, className, onFullscreen }: MermaidRender
         
         // Clean up any partial render attempts with dynamic ID pattern
         const mermaidElements = document.querySelectorAll('[id^="mermaid-"]')
-        mermaidElements.forEach(el => {
+        for (const el of mermaidElements) {
           if (el.id.includes('output')) {
             el.remove()
           }
-        })
+        }
       }
     }
 
@@ -218,8 +218,9 @@ export function MermaidRenderer({ code, className, onFullscreen }: MermaidRender
           'Mermaid Diagram'
         )}
       />
-      <div 
-        className="cursor-pointer"
+      <button 
+        type="button"
+        className="cursor-pointer w-full text-left"
         onClick={() => onFullscreen?.(
           <div className="bg-white p-8 rounded-lg max-w-full max-h-full overflow-auto">
             <div 
@@ -231,7 +232,7 @@ export function MermaidRenderer({ code, className, onFullscreen }: MermaidRender
         )}
       >
         {diagramContainer}
-      </div>
+      </button>
     </div>
   )
 }

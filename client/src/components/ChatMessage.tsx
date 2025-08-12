@@ -146,6 +146,7 @@ export function ChatMessage({
           {isError && details && (
             <div className="mt-3 pt-3 border-t border-error-border/50">
               <button
+                type="button"
                 onClick={() => setShowDetails(!showDetails)}
                 className="flex items-center gap-1 text-xs transition-colors"
                 style={{ color: 'color-mix(in srgb, var(--error-contrast) 70%, transparent)' }}

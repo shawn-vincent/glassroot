@@ -192,6 +192,7 @@ export function CodeBlockHeader({
                      borderColor: 'var(--border)' 
                    }}>
                 <button
+                  type="button"
                   onClick={() => {
                     defaultDownload()
                     setIsDownloadMenuOpen(false)
@@ -203,7 +204,8 @@ export function CodeBlockHeader({
                 
                 {customDownloads.map((download, index) => (
                   <button
-                    key={index}
+                    type="button"
+                    key={`download-${download.label}`}
                     onClick={() => handleCustomDownload(download)}
                     className="w-full text-left px-3 py-2 text-sm rounded-md transition-colors hover:bg-[var(--bg-alt)] whitespace-nowrap"
                   >
@@ -242,6 +244,7 @@ export function CodeBlockHeader({
       
       {/* Click outside to close dropdown */}
       {isDownloadMenuOpen && (
+        // biome-ignore lint/a11y/useKeyWithClickEvents: This is a click-outside handler, not an interactive element
         <div 
           className="fixed inset-0 z-40" 
           onClick={() => setIsDownloadMenuOpen(false)}
