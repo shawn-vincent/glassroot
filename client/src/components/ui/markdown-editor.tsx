@@ -19,6 +19,7 @@ interface MarkdownEditorProps {
 	editable?: boolean;
 	className?: string;
 	onKeyDown?: (event: KeyboardEvent) => boolean | undefined;
+	autoFocus?: boolean;
 }
 
 export function MarkdownEditor({
@@ -32,6 +33,8 @@ export function MarkdownEditor({
 	editable = true,
 	className,
 	onKeyDown,
+	autoFocus = false,
+
 }: MarkdownEditorProps) {
 	const [theme, setTheme] = useState<"light" | "dark">("light");
 	
@@ -234,29 +237,30 @@ export function MarkdownEditor({
 		return exts;
 	}, [extensions, onKeyDown, monospaceHighlight]);
 
-	return (
-		<CodeMirror
-			value={value}
-			height={calculatedHeight}
-			extensions={editorExtensions}
-			onChange={onChange}
-			theme={theme === "dark" ? githubDark : githubLight}
-			placeholder={placeholder}
-			editable={editable}
-			className={className}
-			basicSetup={{
-				lineNumbers: false,
-				foldGutter: false,
-				dropCursor: false,
-				allowMultipleSelections: false,
-				indentOnInput: true,
-				bracketMatching: true,
-				closeBrackets: true,
-				autocompletion: true,
-				rectangularSelection: false,
-				highlightSelectionMatches: false,
-				searchKeymap: false,
-			}}
-		/>
-	);
-}
+		return (
+			<CodeMirror
+				value={value}
+				height={calculatedHeight}
+				extensions={editorExtensions}
+				onChange={onChange}
+				theme={theme === "dark" ? githubDark : githubLight}
+				placeholder={placeholder}
+				editable={editable}
+				className={className}
+				autoFocus={autoFocus}
+				basicSetup={{
+					lineNumbers: false,
+					foldGutter: false,
+					dropCursor: false,
+					allowMultipleSelections: false,
+					indentOnInput: true,
+					bracketMatching: true,
+					closeBrackets: true,
+					autocompletion: true,
+					rectangularSelection: false,
+					highlightSelectionMatches: false,
+					searchKeymap: false,
+				}}
+			/>
+		);
+	}

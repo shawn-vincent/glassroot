@@ -23,7 +23,7 @@ export function CustomChatInput({ userAccent }: CustomChatInputProps) {
 		}
 	}, []);
 
-	const handleSubmit = async (e?: React.FormEvent) => {
+	const handleSubmit = (e?: React.FormEvent) => {
 		if (e) e.preventDefault();
 		if (!input.trim() || isLoading) return;
 		
@@ -34,18 +34,10 @@ export function CustomChatInput({ userAccent }: CustomChatInputProps) {
 		setInput("");
 		
 		// Submit the message
-		await append({
+		append({
 			content: formattedContent,
 			role: "user"
 		});
-		
-		// Focus back on the input after a brief delay to ensure DOM updates
-		setTimeout(() => {
-			const editor = document.querySelector('.cm-editor .cm-content') as HTMLElement;
-			if (editor) {
-				editor.focus();
-			}
-		}, 50);
 	};
 	
 	const handleKeyDown = (e: KeyboardEvent) => {
@@ -86,10 +78,7 @@ export function CustomChatInput({ userAccent }: CustomChatInputProps) {
 	return (
 		<div className="border-t backdrop-blur-sm shadow-[0_-8px_16px_rgba(0,0,0,0.2)] dark:shadow-[0_-8px_16px_rgba(0,0,0,0.3)]" style={{ borderColor: 'color-mix(in srgb, var(--border) 50%, transparent)', backgroundColor: 'color-mix(in srgb, var(--bg-alt) 90%, transparent)' }}>
 		<ChatInput>
-			<form 
-				onSubmit={handleSubmit}
-				className="px-0 pt-4 pb-0 pb-safe-keyboard"
-			>
+			<div className="px-0 pt-4 pb-0 pb-safe-keyboard">
 				<div className="relative group">
 					<div 
 						className={`rounded-bubble transition-all duration-200 focus-within:shadow-lg flex items-end ${userAccent ? 'border-2' : 'border'}`}
@@ -101,13 +90,13 @@ export function CustomChatInput({ userAccent }: CustomChatInputProps) {
 							placeholder="Ask anything..."
 							minLines={1}
 							maxLines={10}
-							editable={!isLoading}
+							editable={true}
 							className="flex-1 px-3 py-1.5"
 							onKeyDown={handleKeyDown}
 						/>
 						<div className="pr-2 pb-2">
 							<IconButton 
-								type="submit" 
+								type="button" 
 								disabled={isLoading || !input.trim()}
 								variant="default"
 								size="sm"
@@ -115,6 +104,10 @@ export function CustomChatInput({ userAccent }: CustomChatInputProps) {
 								style={{ backgroundColor: 'var(--accent)', borderColor: 'var(--accent)' }}
 								onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--accent-muted)' }}
 								onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'var(--accent)' }}
+								// Prevent focus shift on press to keep editor focused
+								onMouseDown={(e) => e.preventDefault()}
+								onTouchStart={(e) => e.preventDefault()}
+								onClick={handleSubmit}
 							>
 								<ArrowUp size={18} style={{ color: 'var(--accent-contrast)' }} />
 							</IconButton>
@@ -124,7 +117,7 @@ export function CustomChatInput({ userAccent }: CustomChatInputProps) {
 						<div className="absolute inset-0 rounded-bubble opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-none" style={{ background: 'linear-gradient(to right, transparent, color-mix(in srgb, var(--accent) 5%, transparent), transparent)' }} />
 					)}
 				</div>
-			</form>
+			</div>
 		</ChatInput>
 		</div>
 	);
