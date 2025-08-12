@@ -2,7 +2,8 @@ import { Button } from "@/components/ui/button";
 import { IconButton } from "@/components/ui/icon-button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Eye, EyeOff, Palette, Settings } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Eye, EyeOff, Palette, Settings, Keyboard } from "lucide-react";
 import { useEffect, useState } from "react";
 import ModelPicker from "@/components/ModelPicker";
 import { MarkdownEditor } from "@/components/ui/markdown-editor";
@@ -18,6 +19,7 @@ export default function SettingsPage() {
 	const [show, setShow] = useState(false);
 	const [userAccent, setUserAccent] = useState<AccentColor>("blue");
 	const [aiAccent, setAiAccent] = useState<AccentColor>("purple");
+	const [enterBehavior, setEnterBehavior] = useState<"send" | "newline">("send");
 
 	useEffect(() => {
 		setApiKey(localStorage.getItem("openrouter_api_key") || "");
@@ -25,6 +27,7 @@ export default function SettingsPage() {
 		setPrompt(localStorage.getItem("llm_prompt") || "");
 		setUserAccent((localStorage.getItem("user_accent_color") as AccentColor) || "blue");
 		setAiAccent((localStorage.getItem("ai_accent_color") as AccentColor) || "purple");
+		setEnterBehavior((localStorage.getItem("enter_key_behavior") as "send" | "newline") || "send");
 	}, []);
 
 	function save() {
@@ -33,8 +36,9 @@ export default function SettingsPage() {
 		localStorage.setItem("llm_prompt", prompt);
 		localStorage.setItem("user_accent_color", userAccent);
 		localStorage.setItem("ai_accent_color", aiAccent);
+		localStorage.setItem("enter_key_behavior", enterBehavior);
 		toast.success("Settings saved successfully!");
-		// Reload to apply new accent colors
+		// Reload to apply new accent colors and keyboard settings
 		setTimeout(() => window.location.reload(), 500);
 	}
 
@@ -96,6 +100,33 @@ export default function SettingsPage() {
 								minLines={6}
 								maxLines={24}
 							/>
+						</div>
+						
+						{/* Keyboard Settings */}
+						<div className="space-y-4 border-t pt-4">
+							<h3 className="text-sm font-medium flex items-center gap-2">
+								<Keyboard className="w-4 h-4" />
+								Keyboard Shortcuts
+							</h3>
+							
+							<div className="space-y-2">
+								<Label htmlFor="enter_behavior">Enter Key Behavior (Desktop)</Label>
+								<Select value={enterBehavior} onValueChange={(value: "send" | "newline") => setEnterBehavior(value)}>
+									<SelectTrigger id="enter_behavior" className="w-full">
+										<SelectValue />
+									</SelectTrigger>
+									<SelectContent>
+										<SelectItem value="send">Send message</SelectItem>
+										<SelectItem value="newline">Insert new line</SelectItem>
+									</SelectContent>
+								</Select>
+								<div className="text-xs text-muted-foreground space-y-1">
+									<p>• <strong>Shift+Enter</strong>: Always inserts a new line</p>
+									<p>• <strong>{navigator.platform.toUpperCase().indexOf('MAC') >= 0 ? 'Cmd+Enter, Ctrl+Enter, or Option+Enter' : 'Ctrl+Enter or Alt+Enter'}</strong>: Always sends the message</p>
+									<p>• <strong>Enter</strong>: Configurable (see above)</p>
+									<p className="mt-2">On mobile devices, Enter always inserts a new line.</p>
+								</div>
+							</div>
 						</div>
 						
 						{/* Accent Color Pickers */}

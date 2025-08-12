@@ -1,4 +1,5 @@
-import { EditorView } from "@codemirror/view";
+import { EditorView, keymap } from "@codemirror/view";
+import { Prec } from "@codemirror/state";
 import { markdown } from "@codemirror/lang-markdown";
 import { languages } from "@codemirror/language-data";
 import { githubDark, githubLight } from "@uiw/codemirror-theme-github";
@@ -17,6 +18,7 @@ interface MarkdownEditorProps {
 	placeholder?: string;
 	editable?: boolean;
 	className?: string;
+	onKeyDown?: (event: KeyboardEvent) => boolean | undefined;
 }
 
 export function MarkdownEditor({
@@ -29,6 +31,7 @@ export function MarkdownEditor({
 	placeholder = "Enter text in Markdown...",
 	editable = true,
 	className,
+	onKeyDown,
 }: MarkdownEditorProps) {
 	const [theme, setTheme] = useState<"light" | "dark">("light");
 	
@@ -84,14 +87,130 @@ export function MarkdownEditor({
 	}, []);
 
 	// Configure editor extensions with markdown and code language support
-	const editorExtensions = [
-		markdown({ 
-			codeLanguages: languages // Enable syntax highlighting in code blocks
-		}),
-		monospaceHighlight, // Apply monospace font to code
-		...extensions,
-		EditorView.lineWrapping,
-		EditorView.theme({
+	const editorExtensions = useMemo(() => {
+		const exts: Extension[] = [];
+		
+		// Add custom keymap with HIGH precedence to override defaults
+		if (onKeyDown) {
+			exts.push(
+				Prec.high(keymap.of([
+					{
+						key: "Enter",
+						preventDefault: true,
+						run: (view) => {
+							const event = new KeyboardEvent('keydown', {
+								key: 'Enter',
+								shiftKey: false,
+								ctrlKey: false,
+								metaKey: false,
+								altKey: false
+							});
+							const result = onKeyDown(event);
+							if (result === false) {
+								// Handler handled it
+								return true;
+							}
+							// Insert newline
+							view.dispatch(view.state.replaceSelection('\n'));
+							return true;
+						}
+					},
+					{
+						key: "Shift-Enter",
+						preventDefault: true,
+						run: (view) => {
+							const event = new KeyboardEvent('keydown', {
+								key: 'Enter',
+								shiftKey: true,
+								ctrlKey: false,
+								metaKey: false,
+								altKey: false
+							});
+							const result = onKeyDown(event);
+							if (result === false) {
+								// Handler handled it
+								return true;
+							}
+							// Insert newline
+							view.dispatch(view.state.replaceSelection('\n'));
+							return true;
+						}
+					},
+					{
+						key: "Ctrl-Enter",
+						preventDefault: true,
+						run: (view) => {
+							const event = new KeyboardEvent('keydown', {
+								key: 'Enter',
+								shiftKey: false,
+								ctrlKey: true,
+								metaKey: false,
+								altKey: false
+							});
+							const result = onKeyDown(event);
+							if (result === false) {
+								// Handler handled it
+								return true;
+							}
+							// Not handled, let default happen
+							return false;
+						}
+					},
+					{
+						key: "Cmd-Enter",
+						preventDefault: true,
+						run: (view) => {
+							const event = new KeyboardEvent('keydown', {
+								key: 'Enter',
+								shiftKey: false,
+								ctrlKey: false,
+								metaKey: true,
+								altKey: false
+							});
+							const result = onKeyDown(event);
+							if (result === false) {
+								// Handler handled it
+								return true;
+							}
+							// Not handled, let default happen
+							return false;
+						}
+					},
+					{
+						key: "Alt-Enter",
+						preventDefault: true,
+						run: (view) => {
+							const event = new KeyboardEvent('keydown', {
+								key: 'Enter',
+								shiftKey: false,
+								ctrlKey: false,
+								metaKey: false,
+								altKey: true
+							});
+							const result = onKeyDown(event);
+							if (result === false) {
+								// Handler handled it
+								return true;
+							}
+							// Not handled, let default happen
+							return false;
+						}
+					}
+				]))
+			);
+		}
+		
+		// Add other extensions
+		exts.push(
+			markdown({ 
+				codeLanguages: languages // Enable syntax highlighting in code blocks
+			}),
+			monospaceHighlight, // Apply monospace font to code
+			...extensions,
+			EditorView.lineWrapping
+		);
+		
+		exts.push(EditorView.theme({
 			"&": {
 				fontFamily: "var(--font-sans)",
 				borderRadius: "0.375rem", // Slightly rounded corners (6px)
@@ -110,8 +229,10 @@ export function MarkdownEditor({
 			".cm-activeLineGutter": {
 				backgroundColor: "transparent !important",
 			},
-		}),
-	];
+		}));
+		
+		return exts;
+	}, [extensions, onKeyDown, monospaceHighlight]);
 
 	return (
 		<CodeMirror
