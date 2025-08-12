@@ -19,6 +19,7 @@ pnpm-debug.log*
 # Client
 client/.vite/
 client/dist/
+client/tsconfig.tsbuildinfo
 
 # API
 api/.wrangler/
