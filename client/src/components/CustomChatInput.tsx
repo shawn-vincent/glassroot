@@ -84,11 +84,11 @@ export function CustomChatInput({ userAccent }: CustomChatInputProps) {
 	};
 
 	return (
-		<div className="border-t backdrop-blur-sm" style={{ borderColor: 'color-mix(in srgb, var(--border) 50%, transparent)', backgroundColor: 'color-mix(in srgb, var(--bg-alt) 50%, transparent)' }}>
+		<div className="border-t backdrop-blur-sm shadow-[0_-8px_16px_rgba(0,0,0,0.2)] dark:shadow-[0_-8px_16px_rgba(0,0,0,0.3)]" style={{ borderColor: 'color-mix(in srgb, var(--border) 50%, transparent)', backgroundColor: 'color-mix(in srgb, var(--bg-alt) 90%, transparent)' }}>
 		<ChatInput>
 			<form 
 				onSubmit={handleSubmit}
-				className="px-4 pt-1 pb-4 pb-safe-keyboard"
+				className="px-0 pt-4 pb-0 pb-safe-keyboard"
 			>
 				<div className="relative group">
 					<div 

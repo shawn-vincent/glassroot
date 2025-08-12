@@ -1,7 +1,4 @@
-import {
-  ChatSection as ChatSectionUI,
-} from '@llamaindex/chat-ui'
-
+import { ChatSection as ChatSectionProvider } from '@llamaindex/chat-ui'
 import '@llamaindex/chat-ui/styles/markdown.css'
 import '@llamaindex/chat-ui/styles/pdf.css'
 import '@llamaindex/chat-ui/styles/editor.css'
@@ -127,9 +124,11 @@ export function ChatSection() {
   
   return (
     <div className={containerClasses} style={{ backgroundColor: 'var(--bg)' }}>
-    <ChatSectionUI handler={handler}>
-      {/* Messages container */}
-      <div ref={messagesContainerRef} className="flex-1 overflow-y-auto scrollable-content py-4 space-y-2">
+    <ChatSectionProvider handler={handler}>
+      {/* Custom layout with no gap */}
+      <div className="flex h-full w-full flex-col">
+        {/* Messages container */}
+        <div ref={messagesContainerRef} className="flex-1 overflow-y-auto scrollable-content px-4 py-4 space-y-2">
         {handler.messages.map((message, index) => {
           const role = mapMessageRole(message.role, message.status)
           const accent = getMessageAccent(message.role)
@@ -190,7 +189,8 @@ export function ChatSection() {
       )}>
         <CustomChatInput userAccent={userAccent} />
       </div>
-    </ChatSectionUI>
+    </div>
+    </ChatSectionProvider>
     </div>
   )
 }
