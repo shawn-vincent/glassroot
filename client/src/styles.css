@@ -2,7 +2,7 @@
 @import "@llamaindex/chat-ui/styles/markdown.css";
 @import "@llamaindex/chat-ui/styles/pdf.css";
 @import "@llamaindex/chat-ui/styles/editor.css";
-@import "./styles/simple-viewport.css";
+@import "./styles/viewport.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -188,20 +188,22 @@
 	}
 	
 	/* Prevent iOS zoom on input focus */
+	/* Note: 16px minimum is required to prevent zoom on iOS Safari */
 	input,
 	textarea,
 	select,
 	button {
-		font-size: 16px !important;
+		font-size: 16px;
+		font-size: max(16px, 1em); /* Ensures minimum 16px while respecting larger sizes */
 		touch-action: manipulation;
 	}
 	
 	/* Ensure proper sizing for larger screens */
-	@media screen and (min-width: 768px) {
+	@media screen and (min-width: 768px) and (hover: hover) {
 		input,
 		textarea,
 		select {
-			font-size: inherit !important;
+			font-size: inherit;
 		}
 	}
 }
@@ -212,48 +214,77 @@
 		color: var(--text);
 	}
 	
-	/* Override llamaindex chat-ui markdown styles */
+	/* Override llamaindex chat-ui markdown styles with higher specificity */
 	.lama-chat-message-content :where(code):not(pre code) {
 		@apply rounded-md px-1.5 py-0.5 font-mono text-sm border;
-		background-color: var(--code-bg) !important;
+		/* Using higher specificity instead of !important */
+		background-color: var(--code-bg);
 		border-color: var(--code-border);
 		color: var(--text);
 	}
 	
+	/* Ensure our styles win over library defaults */
+	.prose-chat .lama-chat-message-content :where(code):not(pre code) {
+		background-color: var(--code-bg);
+	}
+	
 	.lama-chat-message-content pre {
 		@apply rounded-lg p-4 border;
-		background-color: var(--code-bg) !important;
+		/* Using higher specificity instead of !important */
+		background-color: var(--code-bg);
 		border-color: var(--code-border);
-		overflow-x: auto !important;
+		overflow-x: auto;
 		max-width: 100%;
+		/* Ensure scrolling works */
+		overflow-wrap: normal;
+		word-break: normal;
+	}
+	
+	/* Ensure our styles win over library defaults */
+	.prose-chat .lama-chat-message-content pre {
+		background-color: var(--code-bg);
+		overflow-x: auto;
 	}
 	
 	.lama-chat-message-content pre code {
 		@apply bg-transparent border-0 p-0;
 		@apply text-sm;
-		color: var(--text) !important;
-		white-space: pre !important;
-		word-break: normal !important;
-		overflow-wrap: normal !important;
+		/* Using higher specificity instead of !important */
+		color: var(--text);
+		white-space: pre;
+		word-break: normal;
+		overflow-wrap: normal;
+	}
+	
+	/* Ensure our styles win over library defaults */
+	.prose-chat .lama-chat-message-content pre code {
+		color: var(--text);
+		white-space: pre;
+		word-break: normal;
+		overflow-wrap: normal;
 	}
 	
 	/* Ensure code blocks have horizontal scroll */
 	.lama-chat-message-content .code-block {
-		overflow-x: auto !important;
+		overflow-x: auto;
 		max-width: 100%;
+		-webkit-overflow-scrolling: touch;
 	}
 	
 	/* Scale images and mermaid diagrams to fit */
 	.lama-chat-message-content img,
 	.lama-chat-message-content svg {
-		max-width: 100% !important;
-		height: auto !important;
+		max-width: 100%;
+		height: auto;
+		object-fit: contain;
 	}
 	
 	/* Mermaid specific scaling */
 	.mermaid-diagram-container svg {
-		max-width: 100% !important;
-		height: auto !important;
+		max-width: 100%;
+		height: auto;
+		display: block;
+		margin: 0 auto;
 	}
 	
 	/* Links in chat */

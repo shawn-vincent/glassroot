@@ -7,13 +7,9 @@ export default {
     "./src/**/*.{js,ts,jsx,tsx}",
     "./node_modules/@llamaindex/chat-ui/dist/**/*.{js,ts,jsx,tsx}",
   ],
-  safelist: [
-    // Accent classes for dynamic color selection
-    'accent-blue', 'accent-green', 'accent-purple', 'accent-orange', 'accent-pink', 'accent-teal', 'accent-neutral',
-    // Ring colors for selection state
-    'ring-blue-500', 'ring-green-500', 'ring-purple-500', 'ring-orange-500', 'ring-pink-500', 'ring-teal-500', 'ring-gray-500',
-    'dark:ring-blue-400', 'dark:ring-green-400', 'dark:ring-purple-400', 'dark:ring-orange-400', 'dark:ring-pink-400', 'dark:ring-teal-400', 'dark:ring-gray-400',
-  ],
+  // Note: Removed safelist as Tailwind v4's content detection is smart enough to find
+  // the accent-* classes in our CSS file and the ring-* classes in AccentColorPicker.tsx
+  // The static object in AccentColorPicker ensures these classes are always included.
   theme: {
     extend: {
       colors: {

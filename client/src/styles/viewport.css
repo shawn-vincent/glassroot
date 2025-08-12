@@ -1,55 +1,232 @@
-/* client/src/styles/viewport.css */
-@layer viewport {
-  /* Dynamic viewport height with fallbacks */
-  :root {
-    --vh: 1vh;
-    --keyboard-height: 0px;
-    --safe-top: env(safe-area-inset-top);
-    --safe-bottom: env(safe-area-inset-bottom);
-    --safe-left: env(safe-area-inset-left);
-    --safe-right: env(safe-area-inset-right);
-  }
+/**
+ * Viewport Management System
+ * 
+ * This file consolidates all viewport-related CSS for mobile and desktop,
+ * handling dynamic viewport heights, keyboard interactions, and safe areas.
+ * 
+ * Key Features:
+ * - Dynamic viewport height tracking (100dvh support with fallbacks)
+ * - iOS/Android keyboard height compensation
+ * - Safe area insets for notched devices
+ * - Touch interaction controls
+ * - Smooth transitions for keyboard show/hide
+ */
 
-  /* Use modern viewport units with fallbacks */
-  html {
-    height: 100vh;
-    height: 100dvh; /* Dynamic viewport height */
-    position: fixed;
-    width: 100%;
-  }
+/* ============================================
+   CSS Custom Properties for Viewport Control
+   ============================================ */
+:root {
+  /* Viewport height tracking - updated via JavaScript for keyboard handling */
+  --viewport-height: 100vh; /* Fallback, updated dynamically via JS */
+  --viewport-height: 100dvh; /* Modern browsers override with dynamic viewport */
+  
+  /* Keyboard and safe area management */
+  --keyboard-height: 0px; /* Updated via Capacitor Keyboard plugin */
+  --bottom-safe-area: env(safe-area-inset-bottom); /* Defaults to device safe area */
+  
+  /* Device safe area insets (iOS notch, Android gesture bars) */
+  --safe-top: env(safe-area-inset-top);
+  --safe-bottom: env(safe-area-inset-bottom);
+  --safe-left: env(safe-area-inset-left);
+  --safe-right: env(safe-area-inset-right);
+  
+  /* Legacy viewport unit for older calculations */
+  --vh: 1vh;
+}
 
-  body {
-    height: 100%;
-    margin: 0;
-    overflow: hidden;
-    overscroll-behavior: none;
-    /* Prevent all zooming through touch-action */
-    touch-action: pan-x pan-y;
-  }
+/* ============================================
+   Base Document Structure
+   ============================================ */
 
-  /* App container with keyboard awareness */
-  #root {
-    height: 100%;
-    height: calc(100dvh - var(--keyboard-height));
-    overflow: hidden;
-    position: relative;
-  }
+/* HTML root - fixed positioning prevents scroll issues on mobile */
+html {
+  /* Use modern dynamic viewport with fallback chain */
+  height: 100vh; /* Fallback for older browsers */
+  height: 100dvh; /* Dynamic viewport height (iOS 15.4+, Chrome 108+) */
+  
+  /* Prevent document scrolling on mobile */
+  position: fixed;
+  width: 100%;
+}
 
-  /* Allow pinch-zoom only on specific content */
-  .zoomable {
-    touch-action: pinch-zoom;
-  }
+/* Body - inherits full height and prevents unwanted behaviors */
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  overflow: hidden;
+  
+  /* Prevent pull-to-refresh and overscroll bounce */
+  overscroll-behavior: none;
+  
+  /* Allow panning but prevent pinch-zoom by default */
+  touch-action: pan-x pan-y;
+}
 
-  /* Ensure inputs don't trigger zoom */
-  input, textarea, select, button {
-    touch-action: manipulation;
-  }
+/* ============================================
+   Root App Container
+   ============================================ */
 
-  /* Scrollable containers */
-  .scrollable {
-    overflow-y: auto;
-    overflow-x: hidden;
-    -webkit-overflow-scrolling: touch;
-    overscroll-behavior: contain;
+/* Main app container with keyboard-aware height */
+#root {
+  width: 100%;
+  height: var(--viewport-height);
+  overflow: hidden;
+  position: relative;
+  
+  /* Flexbox layout for header/main/footer structure */
+  display: flex;
+  flex-direction: column;
+  
+  /* Smooth transition when keyboard appears/disappears */
+  transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Alternative calculation method for keyboard handling (if needed) */
+#root.keyboard-aware {
+  height: calc(100dvh - var(--keyboard-height));
+}
+
+/* ============================================
+   Layout Components
+   ============================================ */
+
+/* Fixed headers should not shrink */
+header {
+  flex-shrink: 0;
+}
+
+/* Main content area - scrollable and flexible */
+main {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch; /* Momentum scrolling on iOS */
+  min-height: 0; /* Allows flex item to shrink below content size */
+}
+
+/* ============================================
+   Modal and Sheet Components
+   ============================================ */
+
+/* Full-height sheets (settings, menus) with proper height constraints */
+.fixed[data-slot="sheet-content"] {
+  /* Use CSS cascade instead of !important where possible */
+  height: var(--viewport-height);
+  max-height: var(--viewport-height);
+  top: 0;
+  bottom: auto;
+  
+  /* Smooth transitions for height changes */
+  transition: 
+    height 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Dialog content with safe area considerations */
+[data-slot="dialog-content"] {
+  /* Calculate max height accounting for safe areas */
+  max-height: calc(
+    var(--viewport-height) - 
+    var(--bottom-safe-area) - 
+    env(safe-area-inset-top)
+  );
+  
+  transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ============================================
+   Input and Form Controls
+   ============================================ */
+
+/* Prevent zoom on input focus (iOS Safari) */
+input,
+textarea,
+select,
+button {
+  /* 16px minimum prevents zoom on iOS */
+  font-size: 16px;
+  font-size: max(16px, 1em); /* Respect larger font sizes */
+  
+  /* Prevent double-tap zoom but allow other gestures */
+  touch-action: manipulation;
+}
+
+/* Desktop can use normal font sizes */
+@media (min-width: 768px) and (hover: hover) {
+  input,
+  textarea,
+  select,
+  button {
+    font-size: inherit;
   }
+}
+
+/* ============================================
+   Chat Input and Keyboard-Aware Components
+   ============================================ */
+
+/* Dynamic bottom padding for keyboard-aware components */
+[data-chat-input],
+.chat-input-container,
+.keyboard-aware-bottom,
+form:has(textarea) {
+  padding-bottom: var(--bottom-safe-area);
+  transition: padding-bottom 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ============================================
+   Utility Classes
+   ============================================ */
+
+/* Safe area padding utilities */
+.pt-safe {
+  padding-top: env(safe-area-inset-top);
+}
+
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.pl-safe {
+  padding-left: env(safe-area-inset-left);
+}
+
+.pr-safe {
+  padding-right: env(safe-area-inset-right);
+}
+
+/* Dynamic safe area that responds to keyboard */
+.pb-safe-keyboard {
+  padding-bottom: var(--bottom-safe-area);
+  transition: padding-bottom 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Scrollable container with proper mobile behavior */
+.scrollable {
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+
+/* Allow pinch-zoom on specific content (images, diagrams) */
+.zoomable {
+  touch-action: pinch-zoom;
+}
+
+/* ============================================
+   Performance Optimizations
+   ============================================ */
+
+/* Use GPU acceleration for transitions */
+.fixed[data-slot="sheet-content"],
+[data-slot="dialog-content"],
+#root {
+  will-change: height, max-height;
+}
+
+/* Remove will-change after transitions complete */
+.transition-complete {
+  will-change: auto;
 }
