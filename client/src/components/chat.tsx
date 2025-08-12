@@ -48,7 +48,7 @@ export function ChatSection() {
     
     // Multiple attempts to ensure scroll happens after render
     const attempts = [0, 50, 100, 200]
-    const timeouts: NodeJS.Timeout[] = []
+    const timeouts: ReturnType<typeof setTimeout>[] = []
     
     attempts.forEach(delay => {
       const timeout = setTimeout(scrollToBottom, delay)

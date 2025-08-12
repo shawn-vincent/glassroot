@@ -30,7 +30,6 @@ const router = createBrowserRouter(
 	],
 	{
 		future: {
-			v7_startTransition: true,
 			v7_relativeSplatPath: true,
 			v7_fetcherPersist: true,
 			v7_normalizeFormMethod: true,
@@ -57,10 +56,7 @@ if (!rootEl) throw new Error("Root element #root not found");
 createRoot(rootEl).render(
 	<React.StrictMode>
 		<QueryClientProvider client={qc}>
-			<RouterProvider 
-				router={router} 
-				future={{ v7_startTransition: true }}
-			/>
+			<RouterProvider router={router} />
 		</QueryClientProvider>
 	</React.StrictMode>,
 );
