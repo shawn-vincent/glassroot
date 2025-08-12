@@ -7,13 +7,15 @@ import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 import ErrorBlock from "../components/ErrorBlock";
 import { api } from "../lib/api";
+import { FilePlus } from "lucide-react";
+import { PageLayout } from "@/components/PageLayout";
 
 const Schema = z.object({
 	title: z.string().trim().min(1),
 	content: z.string().trim().min(1),
 });
 
-export default function DocumentNew() {
+export default function DocumentNewPage() {
 	const [title, setTitle] = useState("");
 	const [content, setContent] = useState("");
 	const [error, setError] = useState<unknown>(null);
@@ -45,8 +47,12 @@ export default function DocumentNew() {
 	}
 
 	return (
-		<div className="space-y-4">
-			<h2 className="text-2xl font-semibold">New Document</h2>
+		<PageLayout
+			title="New Document"
+			description="Create a new document"
+			icon={FilePlus}
+		>
+			<div className="space-y-4">
 			<div className="space-y-2">
 				<Label htmlFor="doc_title">Title</Label>
 				<Input
@@ -72,6 +78,7 @@ export default function DocumentNew() {
 				</Button>
 			</div>
 			{error ? <ErrorBlock error={error} /> : null}
-		</div>
+			</div>
+		</PageLayout>
 	);
 }

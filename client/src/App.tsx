@@ -1,16 +1,14 @@
 import { IconButton } from "@/components/ui/icon-button";
 import { cn } from "@/lib/utils";
 import { MessageSquare, FileText, Search, Settings } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Link, Outlet, useLocation } from "react-router-dom";
-import ConfigPanel from "./components/ConfigPanel";
 import OfflineIndicator from "./components/OfflineIndicator";
 import { Toaster } from "./components/ui/sonner";
 import { useCapacitorKeyboard } from "@/hooks/useCapacitorKeyboard";
 import { ThemeToggle } from "./components/ThemeToggle";
 
 export default function App() {
-	const [showConfig, setShowConfig] = useState(false);
 	const { pathname } = useLocation();
 	
 	// Handle keyboard on Capacitor
@@ -47,15 +45,14 @@ export default function App() {
 							<Search size={24} />
 						</IconButton>
 					</Link>
+					<Link to="/settings" title="Settings">
+						<IconButton selected={pathname.startsWith("/settings")}>
+							<Settings size={24} />
+						</IconButton>
+					</Link>
 				</nav>
 				<div className="flex gap-2 items-center">
 					<ThemeToggle />
-					<IconButton
-						onClick={() => setShowConfig(true)}
-						aria-label="Settings"
-					>
-						<Settings size={24} />
-					</IconButton>
 				</div>
 			</header>
 			<OfflineIndicator />
@@ -63,12 +60,11 @@ export default function App() {
 			<main
 				className={cn(
 					"flex-1 flex flex-col min-h-0 overflow-hidden",
-					pathname === "/" ? "" : "p-4 max-w-[960px] w-full mx-auto"
+					pathname === "/" ? "" : pathname === "/settings" ? "" : "p-4 max-w-[960px] w-full mx-auto"
 				)}
 			>
 				<Outlet />
 			</main>
-			{showConfig && <ConfigPanel onClose={() => setShowConfig(false)} />}
 		</div>
 	);
 }

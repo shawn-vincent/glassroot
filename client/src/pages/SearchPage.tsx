@@ -13,8 +13,10 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import ErrorBlock from "../components/ErrorBlock";
 import { api } from "../lib/api";
+import { Search } from "lucide-react";
+import { PageLayout } from "@/components/PageLayout";
 
-export default function Search() {
+export default function SearchPage() {
 	const [q, setQ] = useState("");
 	const [limit, setLimit] = useState(10);
 	const [results, setResults] = useState<
@@ -40,8 +42,12 @@ export default function Search() {
 	}
 
 	return (
-		<div className="flex flex-col h-full overflow-hidden">
-			<div className="flex-shrink-0 space-y-4 pb-4">
+		<PageLayout
+			title="Search"
+			description="Search your documents using semantic similarity"
+			icon={Search}
+		>
+			<div className="space-y-4">
 			<div className="space-y-2">
 				<Label htmlFor="search_query">Query</Label>
 				<Input
@@ -65,9 +71,7 @@ export default function Search() {
 				</Button>
 			</div>
 			{error ? <ErrorBlock error={error} /> : null}
-			</div>
-			<div className="flex-1 overflow-y-auto -mx-4 px-4">
-				<div className="grid gap-3 pb-4">
+			<div className="grid gap-3">
 					{results.map((r) => (
 						<Card key={r.id}>
 							<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -93,6 +97,6 @@ export default function Search() {
 					))}
 				</div>
 			</div>
-		</div>
+		</PageLayout>
 	);
 }

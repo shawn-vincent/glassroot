@@ -8,11 +8,12 @@ import React from "react";
 import { createRoot } from "react-dom/client";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import App from "./App";
-import DocumentNew from "./pages/DocumentNew";
-import DocumentView from "./pages/DocumentView";
-import Documents from "./pages/Documents";
-import Home from "./pages/Home";
-import Search from "./pages/Search";
+import DocumentNewPage from "./pages/DocumentNewPage";
+import DocumentViewPage from "./pages/DocumentViewPage";
+import DocumentsPage from "./pages/DocumentsPage";
+import HomePage from "./pages/HomePage";
+import SearchPage from "./pages/SearchPage";
+import SettingsPage from "./pages/SettingsPage";
 import "./styles.css";
 const router = createBrowserRouter(
 	[
@@ -20,11 +21,12 @@ const router = createBrowserRouter(
 			path: "/",
 			element: <App />,
 			children: [
-				{ index: true, element: <Home /> },
-				{ path: "documents", element: <Documents /> },
-				{ path: "documents/new", element: <DocumentNew /> },
-				{ path: "documents/:id", element: <DocumentView /> },
-				{ path: "search", element: <Search /> },
+				{ index: true, element: <HomePage /> },
+				{ path: "documents", element: <DocumentsPage /> },
+				{ path: "documents/new", element: <DocumentNewPage /> },
+				{ path: "documents/:id", element: <DocumentViewPage /> },
+				{ path: "search", element: <SearchPage /> },
+				{ path: "settings", element: <SettingsPage /> },
 			],
 		},
 	],
