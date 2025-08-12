@@ -15,7 +15,7 @@
 		"build:web": "npm -w client run build:web",
 		"build:ios": "npm -w client run build:ios",
 		"build:android": "npm -w client run build:android",
-		"typecheck": "npm -w api exec tsc --noEmit && npm -w client exec tsc --noEmit",
+		"typecheck": "npm -w api exec -- tsc --noEmit && npm -w client exec -- tsc --noEmit",
 		"lint": "biome lint --reporter summary .",
 		"format": "biome format .",
 		"check": "npm run typecheck && npm run lint",
