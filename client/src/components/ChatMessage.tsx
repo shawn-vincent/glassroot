@@ -105,10 +105,7 @@ export function ChatMessage({
         <div className={bubbleClasses} style={bubbleStyles}>
           {/* Name and time inside bubble */}
           {(name || time) && (
-            <div className={cn(
-              'flex items-center gap-2 mb-2 pb-2 border-b border-black/10 dark:border-white/10',
-              isAlignedCenter && 'justify-center'
-            )}>
+            <div className="flex items-center gap-2 mb-2 pb-2 border-b border-black/10 dark:border-white/10">
               {name && (
                 <span 
                   className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border"
