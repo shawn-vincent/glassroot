@@ -39,7 +39,8 @@ export function MarkdownEditor({
 		const lines = value.split("\n").length;
 		// Add 1 extra line for better UX when typing
 		const totalLines = Math.min(maxLines, Math.max(minLines, lines + 1));
-		return `${totalLines * 20}px`;
+		// Use 1rem per line
+		return `${totalLines}rem`;
 	}, [value, height, minLines, maxLines]);
 
 	// Create highlight style for monospace code
@@ -93,12 +94,21 @@ export function MarkdownEditor({
 		EditorView.theme({
 			"&": {
 				fontFamily: "var(--font-sans)",
+				borderRadius: "0.375rem", // Slightly rounded corners (6px)
+				overflow: "hidden",
 			},
 			".cm-content": {
 				fontFamily: "var(--font-sans)",
+				padding: "4px 0", // Equal top and bottom padding
 			},
 			".cm-gutters": {
 				display: "none",
+			},
+			".cm-activeLine": {
+				backgroundColor: "transparent !important", // Turn off current line highlighting
+			},
+			".cm-activeLineGutter": {
+				backgroundColor: "transparent !important",
 			},
 		}),
 	];
