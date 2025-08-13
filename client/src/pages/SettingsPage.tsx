@@ -7,9 +7,9 @@ import { Eye, EyeOff, Palette, Settings, Keyboard } from "lucide-react";
 import { useEffect, useState } from "react";
 import ModelPicker from "@/components/ModelPicker";
 import { MarkdownEditor } from "@/components/ui/markdown-editor";
-import type { AccentColor } from "@/components/ChatMessage";
 import { AccentColorPicker } from "@/components/AccentColorPicker";
 import { toast } from "sonner";
+import { applyAccentColor, type AccentColor, getDefaultAccentColor } from "@/lib/theme-colors";
 import { PageLayout } from "@/components/PageLayout";
 
 export default function SettingsPage() {
@@ -17,7 +17,7 @@ export default function SettingsPage() {
 	const [model, setModel] = useState("");
 	const [prompt, setPrompt] = useState("");
 	const [show, setShow] = useState(false);
-	const [userAccent, setUserAccent] = useState<AccentColor>("blue");
+	const [userAccent, setUserAccent] = useState<AccentColor>(getDefaultAccentColor());
 	const [aiAccent, setAiAccent] = useState<AccentColor>("purple");
 	const [enterBehavior, setEnterBehavior] = useState<"send" | "newline">("send");
 
@@ -25,7 +25,7 @@ export default function SettingsPage() {
 		setApiKey(localStorage.getItem("openrouter_api_key") || "");
 		setModel(localStorage.getItem("openrouter_model") || "");
 		setPrompt(localStorage.getItem("llm_prompt") || "");
-		setUserAccent((localStorage.getItem("user_accent_color") as AccentColor) || "blue");
+		setUserAccent((localStorage.getItem("user_accent_color") as AccentColor) || getDefaultAccentColor());
 		setAiAccent((localStorage.getItem("ai_accent_color") as AccentColor) || "purple");
 		setEnterBehavior((localStorage.getItem("enter_key_behavior") as "send" | "newline") || "send");
 	}, []);
@@ -37,9 +37,13 @@ export default function SettingsPage() {
 		localStorage.setItem("user_accent_color", userAccent);
 		localStorage.setItem("ai_accent_color", aiAccent);
 		localStorage.setItem("enter_key_behavior", enterBehavior);
+		
+		// Update the accent color immediately using CSS variables
+		const isDark = document.documentElement.classList.contains("dark");
+		applyAccentColor(userAccent, isDark);
+		
 		toast.success("Settings saved successfully!");
-		// Reload to apply new accent colors and keyboard settings
-		setTimeout(() => window.location.reload(), 500);
+		// No need to reload - colors update immediately
 	}
 
 	return (

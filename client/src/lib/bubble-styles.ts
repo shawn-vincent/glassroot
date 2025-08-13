@@ -1,4 +1,4 @@
-import type { AccentColor } from '@/components/ChatMessage'
+import type { AccentColor } from '@/lib/theme-colors'
 
 export interface BubbleStyleOptions {
   accent?: AccentColor
@@ -13,13 +13,18 @@ export function getBubbleStyles(options: BubbleStyleOptions = {}): React.CSSProp
   const isError = variant === 'error'
   const isSystem = variant === 'system'
   
+  // If we have an accent color, use the specific Tailwind color variable
+  // instead of the global --accent variable
+  const accentVar = accent ? `--color-${accent}-500` : null
+  const accentSoft = accent ? `color-mix(in srgb, var(${accentVar}) 10%, transparent)` : null
+  
   return {
-    backgroundColor: hasAccent ? 'var(--accent-soft)' :
+    backgroundColor: hasAccent && accentSoft ? accentSoft :
                      isError ? 'var(--error-bg)' :
                      isSystem ? 'var(--bg-alt)' :
                      'var(--bg-alt)',
     borderColor: bordered ? (
-      hasAccent ? 'var(--accent)' :
+      hasAccent && accentVar ? `var(${accentVar})` :
       isError ? 'var(--error-border)' :
       'var(--border)'
     ) : undefined,

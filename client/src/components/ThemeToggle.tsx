@@ -1,6 +1,7 @@
 import { Moon, Sun } from 'lucide-react'
 import { IconButton } from './ui/icon-button'
 import { useEffect, useState } from 'react'
+import { applyAccentColor, type AccentColor } from '@/lib/theme-colors'
 
 export function ThemeToggle() {
   const [theme, setTheme] = useState<'light' | 'dark'>('light')
@@ -27,6 +28,10 @@ export function ThemeToggle() {
     } else {
       document.documentElement.classList.remove('dark')
     }
+    
+    // Reapply the accent color for the new theme
+    const savedAccent = (localStorage.getItem('user_accent_color') || 'blue') as AccentColor
+    applyAccentColor(savedAccent, newTheme === 'dark')
   }
   
   return (

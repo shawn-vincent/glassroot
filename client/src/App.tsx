@@ -7,6 +7,7 @@ import OfflineIndicator from "./components/OfflineIndicator";
 import { Toaster } from "./components/ui/sonner";
 import { useCapacitorKeyboard } from "@/hooks/useCapacitorKeyboard";
 import { ThemeToggle } from "./components/ThemeToggle";
+import { applyAccentColor, type AccentColor } from "@/lib/theme-colors";
 
 export default function App() {
 	const { pathname } = useLocation();
@@ -14,17 +15,20 @@ export default function App() {
 	// Handle keyboard on Capacitor
 	useCapacitorKeyboard();
 	
-	// Apply persisted theme at app mount to avoid mismatch
+	// Apply persisted theme and accent color at app mount
 	useEffect(() => {
-		const saved = localStorage.getItem("theme");
-		const theme = saved === "dark" ? "dark" : "light";
-		if (theme === "dark") {
+		// Apply theme
+		const savedTheme = localStorage.getItem("theme");
+		const isDark = savedTheme === "dark";
+		if (isDark) {
 			document.documentElement.classList.add("dark");
 		} else {
 			document.documentElement.classList.remove("dark");
 		}
 		
-		// Removed complex platform and keyboard setup
+		// Apply user accent color using CSS variables directly
+		const savedAccent = (localStorage.getItem("user_accent_color") || "blue") as AccentColor;
+		applyAccentColor(savedAccent, isDark);
 	}, []);
 	return (
 		<div className="h-full flex flex-col">

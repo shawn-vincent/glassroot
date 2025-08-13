@@ -6,6 +6,41 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Define green as primary color in Tailwind v4 way */
+@theme {
+	/* Green color palette for primary */
+	--color-primary-50: oklch(98.2% 0.018 155.826);
+	--color-primary-100: oklch(96.2% 0.044 156.743);
+	--color-primary-200: oklch(92.5% 0.084 155.995);
+	--color-primary-300: oklch(87.1% 0.15 154.449);
+	--color-primary-400: oklch(79.2% 0.209 151.711);
+	--color-primary-500: oklch(72.3% 0.219 149.579);
+	--color-primary-600: oklch(62.7% 0.194 149.214);
+	--color-primary-700: oklch(52.7% 0.154 150.069);
+	--color-primary-800: oklch(44.8% 0.119 151.328);
+	--color-primary-900: oklch(39.3% 0.095 152.535);
+	--color-primary-950: oklch(26.6% 0.065 152.934);
+	
+	/* Also define the base primary color for utilities like bg-primary */
+	--color-primary: oklch(72.3% 0.219 149.579);
+	
+	/* Define accent color scale as well */
+	--color-accent-50: oklch(98.2% 0.018 155.826);
+	--color-accent-100: oklch(96.2% 0.044 156.743);
+	--color-accent-200: oklch(92.5% 0.084 155.995);
+	--color-accent-300: oklch(87.1% 0.15 154.449);
+	--color-accent-400: oklch(79.2% 0.209 151.711);
+	--color-accent-500: oklch(72.3% 0.219 149.579);
+	--color-accent-600: oklch(62.7% 0.194 149.214);
+	--color-accent-700: oklch(52.7% 0.154 150.069);
+	--color-accent-800: oklch(44.8% 0.119 151.328);
+	--color-accent-900: oklch(39.3% 0.095 152.535);
+	--color-accent-950: oklch(26.6% 0.065 152.934);
+	
+	/* Base accent color */
+	--color-accent: oklch(72.3% 0.219 149.579);
+}
+
 :root {
 	color-scheme: light;
 	--radius: 0.625rem;
@@ -25,11 +60,11 @@
 	--error-bg: #FEE2E2;
 	--error-border: #FCA5A5;
 	
-	/* Default accent - Blue */
-	--accent: #007AFF;
+	/* Legacy accent variables for compatibility */
+	--accent: var(--color-accent);
 	--accent-contrast: #FFFFFF;
-	--accent-soft: rgba(0, 122, 255, 0.1);
-	--accent-muted: rgba(0, 122, 255, 0.6);
+	--accent-soft: color-mix(in srgb, var(--color-accent) 10%, transparent);
+	--accent-muted: color-mix(in srgb, var(--color-accent) 60%, transparent);
 	
 	/* Legacy shadcn variables for compatibility */
 	--background: var(--bg);
@@ -38,8 +73,8 @@
 	--card-foreground: var(--text);
 	--popover: var(--bg);
 	--popover-foreground: var(--text);
-	--primary: var(--accent);
-	--primary-foreground: var(--accent-contrast);
+	--primary: var(--color-primary);
+	--primary-foreground: #FFFFFF;
 	--secondary: var(--bg-alt);
 	--secondary-foreground: var(--text);
 	--muted: var(--bg-alt);
@@ -47,7 +82,7 @@
 	--destructive: var(--error);
 	--destructive-foreground: var(--error-contrast);
 	--input: var(--border);
-	--ring: var(--accent);
+	--ring: var(--color-primary);
 }
 
 .dark {
@@ -68,112 +103,14 @@
 	--error-bg: #3B0F0F;
 	--error-border: #7F1D1D;
 	
-	/* Default accent - Blue (dark) */
-	--accent: #3B82F6;
+	/* Legacy accent variables for compatibility - dark mode */
+	--accent: var(--color-accent);
 	--accent-contrast: #FFFFFF;
-	--accent-soft: rgba(59, 130, 246, 0.1);
-	--accent-muted: rgba(59, 130, 246, 0.6);
+	--accent-soft: color-mix(in srgb, var(--color-accent) 15%, transparent);
+	--accent-muted: color-mix(in srgb, var(--color-accent) 60%, transparent);
 }
 
-/* Accent color classes - Light mode */
-.accent-blue {
-	--accent: #007AFF;
-	--accent-contrast: #FFFFFF;
-	--accent-soft: rgba(0, 122, 255, 0.1);
-	--accent-muted: rgba(0, 122, 255, 0.6);
-}
-
-.accent-green {
-	--accent: #34C759;
-	--accent-contrast: #FFFFFF;
-	--accent-soft: rgba(52, 199, 89, 0.1);
-	--accent-muted: rgba(52, 199, 89, 0.6);
-}
-
-.accent-purple {
-	--accent: #AF52DE;
-	--accent-contrast: #FFFFFF;
-	--accent-soft: rgba(175, 82, 222, 0.1);
-	--accent-muted: rgba(175, 82, 222, 0.6);
-}
-
-.accent-orange {
-	--accent: #FF9500;
-	--accent-contrast: #FFFFFF;
-	--accent-soft: rgba(255, 149, 0, 0.1);
-	--accent-muted: rgba(255, 149, 0, 0.6);
-}
-
-.accent-pink {
-	--accent: #FF2D55;
-	--accent-contrast: #FFFFFF;
-	--accent-soft: rgba(255, 45, 85, 0.1);
-	--accent-muted: rgba(255, 45, 85, 0.6);
-}
-
-.accent-teal {
-	--accent: #30B0C7;
-	--accent-contrast: #FFFFFF;
-	--accent-soft: rgba(48, 176, 199, 0.1);
-	--accent-muted: rgba(48, 176, 199, 0.6);
-}
-
-.accent-neutral {
-	--accent: #8E8E93;
-	--accent-contrast: #FFFFFF;
-	--accent-soft: rgba(142, 142, 147, 0.1);
-	--accent-muted: rgba(142, 142, 147, 0.6);
-}
-
-/* Accent color classes - Dark mode */
-.dark .accent-blue {
-	--accent: #3B82F6;
-	--accent-contrast: #FFFFFF;
-	--accent-soft: rgba(59, 130, 246, 0.15);
-	--accent-muted: rgba(59, 130, 246, 0.6);
-}
-
-.dark .accent-green {
-	--accent: #22C55E;
-	--accent-contrast: #FFFFFF;
-	--accent-soft: rgba(34, 197, 94, 0.15);
-	--accent-muted: rgba(34, 197, 94, 0.6);
-}
-
-.dark .accent-purple {
-	--accent: #A855F7;
-	--accent-contrast: #FFFFFF;
-	--accent-soft: rgba(168, 85, 247, 0.15);
-	--accent-muted: rgba(168, 85, 247, 0.6);
-}
-
-.dark .accent-orange {
-	--accent: #F97316;
-	--accent-contrast: #FFFFFF;
-	--accent-soft: rgba(249, 115, 22, 0.15);
-	--accent-muted: rgba(249, 115, 22, 0.6);
-}
-
-.dark .accent-pink {
-	--accent: #EC4899;
-	--accent-contrast: #FFFFFF;
-	--accent-soft: rgba(236, 72, 153, 0.15);
-	--accent-muted: rgba(236, 72, 153, 0.6);
-}
-
-.dark .accent-teal {
-	--accent: #14B8A6;
-	--accent-contrast: #FFFFFF;
-	--accent-soft: rgba(20, 184, 166, 0.15);
-	--accent-muted: rgba(20, 184, 166, 0.6);
-}
-
-.dark .accent-neutral {
-	--accent: #666666;
-	--accent-contrast: #FFFFFF;
-	--accent-soft: rgba(102, 102, 102, 0.15);
-	--accent-muted: rgba(102, 102, 102, 0.6);
-}
+/* Removed old accent color classes - not compatible with Tailwind v4 */
 
 @layer base {
 	* {

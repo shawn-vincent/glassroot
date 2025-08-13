@@ -4,7 +4,8 @@ import '@llamaindex/chat-ui/styles/pdf.css'
 import '@llamaindex/chat-ui/styles/editor.css'
 import { useOpenRouterChat } from '@/hooks/useOpenRouterChat'
 import { CustomChatInput } from './CustomChatInput'
-import { ChatMessage, type MessageRole, type AccentColor } from './ChatMessage'
+import { ChatMessage, type MessageRole } from './ChatMessage'
+import type { AccentColor } from '@/lib/theme-colors'
 import { MarkdownContent } from './MarkdownContent'
 import { useEffect, useState } from 'react' 
 import { cn } from '@/lib/utils' 
@@ -73,19 +74,8 @@ export function ChatSection() {
     }
   }
   
-  // Apply accent class based on user selection
-  const containerClasses = cn(
-    'h-full flex flex-col transition-colors duration-300',
-    {
-      'accent-blue': userAccent === 'blue',
-      'accent-green': userAccent === 'green',
-      'accent-purple': userAccent === 'purple',
-      'accent-orange': userAccent === 'orange',
-      'accent-pink': userAccent === 'pink',
-      'accent-teal': userAccent === 'teal',
-      'accent-neutral': userAccent === 'neutral',
-    }
-  )
+  // No need for accent classes - they're applied globally now
+  const containerClasses = 'h-full flex flex-col transition-colors duration-300'
   
   
   return (
@@ -120,21 +110,22 @@ export function ChatSection() {
           )
         })}
         
-        {/* Loading indicator with AI accent */}
+        {/* Loading indicator - uses AI's accent color */}
         {handler.isLoading && handler.messages[handler.messages.length - 1]?.role !== 'assistant' && (
           <div className="flex items-center gap-3 px-4 py-2 animate-fade-in">
-            <div className={cn('flex gap-1 ml-3', {
-              'accent-blue': aiAccent === 'blue',
-              'accent-green': aiAccent === 'green',
-              'accent-purple': aiAccent === 'purple',
-              'accent-orange': aiAccent === 'orange',
-              'accent-pink': aiAccent === 'pink',
-              'accent-teal': aiAccent === 'teal',
-              'accent-neutral': aiAccent === 'neutral',
-            })}>
-              <div className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: 'var(--accent)' }} />
-              <div className="w-2 h-2 rounded-full animate-pulse delay-75" style={{ backgroundColor: 'var(--accent)' }} />
-              <div className="w-2 h-2 rounded-full animate-pulse delay-150" style={{ backgroundColor: 'var(--accent)' }} />
+            <div className="flex gap-1 ml-3">
+              <div 
+                className="w-2 h-2 rounded-full animate-pulse" 
+                style={{ backgroundColor: `var(--color-${aiAccent}-500)` }}
+              />
+              <div 
+                className="w-2 h-2 rounded-full animate-pulse delay-75" 
+                style={{ backgroundColor: `var(--color-${aiAccent}-500)` }}
+              />
+              <div 
+                className="w-2 h-2 rounded-full animate-pulse delay-150" 
+                style={{ backgroundColor: `var(--color-${aiAccent}-500)` }}
+              />
             </div>
           </div>
         )}
@@ -142,19 +133,8 @@ export function ChatSection() {
         {/* Autoscroll and jump button removed */}
       </div>
       
-      {/* Input - inherits user accent from parent */}
-      <div className={cn(
-        "border-t border-[var(--border)] glass-subtle",
-        userAccent && {
-          'accent-blue': userAccent === 'blue',
-          'accent-green': userAccent === 'green',
-          'accent-purple': userAccent === 'purple',
-          'accent-orange': userAccent === 'orange',
-          'accent-pink': userAccent === 'pink',
-          'accent-teal': userAccent === 'teal',
-          'accent-neutral': userAccent === 'neutral',
-        }
-      )}>
+      {/* Input - uses global accent color */}
+      <div className="border-t border-[var(--border)] glass-subtle">
         <CustomChatInput userAccent={userAccent} />
       </div>
     </div>

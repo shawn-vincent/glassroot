@@ -25,7 +25,7 @@ Glassroot is a document management and semantic search application with an LLM c
 - CodeMirror 6 for markdown editing with syntax highlighting
 - @llamaindex/chat-ui for chat interface
 - Capacitor for iOS/Android mobile apps
-- Tailwind CSS v4 for styling
+- Tailwind CSS v4 for styling (with custom accent colors)
 - Zod for client-side validation
 - Local storage for configuration persistence
 
@@ -128,6 +128,42 @@ D1 table `documents`:
 - Search results: default 10, max 20
 - Embedding model: `@cf/baai/bge-base-en-v1.5`
 - Markdown editor: grows from 1 to max 10-24 lines dynamically
+
+## Tailwind v4 Theming
+
+### Setting Accent/Primary Colors
+
+In Tailwind CSS v4, custom colors must be defined using the `@theme` directive in `client/src/styles.css`. This is different from Tailwind v3's approach:
+
+1. **Define color scales in @theme block**: Colors must be defined as CSS custom properties within `@theme`:
+   ```css
+   @theme {
+     /* Define complete color scale for utilities like bg-primary-500 */
+     --color-primary-50: oklch(98.2% 0.018 155.826);
+     --color-primary-100: oklch(96.2% 0.044 156.743);
+     /* ... through 950 */
+     
+     /* IMPORTANT: Also define base color for bg-primary utility */
+     --color-primary: oklch(72.3% 0.219 149.579);
+     
+     /* Same for accent colors */
+     --color-accent: oklch(72.3% 0.219 149.579);
+   }
+   ```
+
+2. **OKLCH color format**: Use OKLCH for perceptual uniformity and better color interpolation
+3. **Utility classes generated automatically**: Once defined in `@theme`, Tailwind generates utilities like:
+   - `bg-primary`, `text-primary`, `border-primary` (uses `--color-primary`)
+   - `bg-primary-500`, `text-primary-500` (uses `--color-primary-500`)
+   - `bg-accent`, `text-accent` (uses `--color-accent`)
+
+4. **Dynamic color switching**: The app uses `applyAccentColor()` in `lib/theme-colors.ts` to dynamically change accent colors by setting CSS variables on the root element
+
+### Important Notes
+- Tailwind v4 only generates utilities for colors defined in `@theme`
+- CSS classes added dynamically at runtime won't work due to Tailwind's build-time purging
+- Always define both the base color (e.g., `--color-primary`) and the scale (e.g., `--color-primary-500`)
+- The build process (Vite) compiles and minifies all CSS, so verify colors by checking the built output
 
 ## Testing Strategy
 

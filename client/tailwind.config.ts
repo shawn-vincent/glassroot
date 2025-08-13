@@ -5,11 +5,9 @@ export default {
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
+    "./src/**/*.css",
     "./node_modules/@llamaindex/chat-ui/dist/**/*.{js,ts,jsx,tsx}",
   ],
-  // Note: Removed safelist as Tailwind v4's content detection is smart enough to find
-  // the accent-* classes in our CSS file and the ring-* classes in AccentColorPicker.tsx
-  // The static object in AccentColorPicker ensures these classes are always included.
   theme: {
     extend: {
       colors: {

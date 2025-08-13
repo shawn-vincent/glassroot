@@ -5,9 +5,9 @@ import { AlertTriangle, AlertCircle, Copy, RotateCw, ChevronDown, ChevronUp } fr
 import { Button } from './ui/button'
 import { useState } from 'react'
 import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard'
+import type { AccentColor } from '@/lib/theme-colors'
 
 export type MessageRole = 'self' | 'user' | 'assistant' | 'tool' | 'system' | 'error'
-export type AccentColor = 'blue' | 'green' | 'purple' | 'orange' | 'pink' | 'teal' | 'neutral'
 
 interface MessageProps {
   role: MessageRole
@@ -44,19 +44,7 @@ export function ChatMessage({
   const isSystem = role === 'system'
   const hasAccent = accent && (role === 'self' || role === 'assistant')
   
-  // Create wrapper div with accent class for proper scoping
-  const wrapperClasses = cn(
-    'w-full',
-    accent && {
-      'accent-blue': accent === 'blue',
-      'accent-green': accent === 'green',
-      'accent-purple': accent === 'purple',
-      'accent-orange': accent === 'orange',
-      'accent-pink': accent === 'pink',
-      'accent-teal': accent === 'teal',
-      'accent-neutral': accent === 'neutral',
-    }
-  )
+  // No wrapper classes needed - we use inline styles for accent colors
   
   const bubbleClasses = cn(
     'group relative max-w-bubble rounded-bubble px-4 py-3',
@@ -99,7 +87,7 @@ export function ChatMessage({
   
   return (
     <div className={containerClasses}>
-      <div className={wrapperClasses}>
+      <div className="w-full">
         <div className="flex flex-col gap-1 max-w-bubble">
         {/* Message bubble */}
         <div className={bubbleClasses} style={bubbleStyles}>
@@ -110,9 +98,9 @@ export function ChatMessage({
                 <span 
                   className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border"
                   style={{ 
-                    borderColor: accent ? 'var(--accent)' : 'var(--border)',
-                    color: accent ? 'var(--accent)' : 'var(--text-muted)',
-                    backgroundColor: accent ? 'var(--accent-soft)' : 'transparent'
+                    borderColor: accent ? `var(--color-${accent}-500)` : 'var(--border)',
+                    color: accent ? `var(--color-${accent}-500)` : 'var(--text-muted)',
+                    backgroundColor: accent ? `color-mix(in srgb, var(--color-${accent}-500) 10%, transparent)` : 'transparent'
                   }}
                 >
                   {name}
