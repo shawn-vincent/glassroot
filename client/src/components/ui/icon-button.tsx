@@ -18,8 +18,12 @@ const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
 
 		const variantClasses = {
 			default: "bg-primary text-primary-foreground hover:bg-primary/90",
-			ghost: "hover:bg-secondary",
-			outline: "border border-input bg-background hover:bg-secondary",
+			ghost: selected 
+				? "bg-primary/10 text-primary hover:bg-primary/20" 
+				: "hover:bg-secondary",
+			outline: selected
+				? "border border-primary bg-primary/10 text-primary hover:bg-primary/20"
+				: "border border-input bg-background hover:bg-secondary",
 		};
 
 		return (
@@ -29,7 +33,6 @@ const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
 					"inline-flex items-center justify-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
 					sizeClasses[size],
 					variantClasses[variant],
-					selected && "bg-secondary text-foreground",
 					className
 				)}
 				{...props}

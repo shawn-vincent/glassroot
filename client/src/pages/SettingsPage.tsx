@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button";
 import { IconButton } from "@/components/ui/icon-button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -8,7 +7,6 @@ import { useEffect, useState } from "react";
 import ModelPicker from "@/components/ModelPicker";
 import { MarkdownEditor } from "@/components/ui/markdown-editor";
 import { AccentColorPicker } from "@/components/AccentColorPicker";
-import { toast } from "sonner";
 import { applyAccentColor, type AccentColor, getDefaultAccentColor } from "@/lib/theme-colors";
 import { PageLayout } from "@/components/PageLayout";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -31,21 +29,39 @@ export default function SettingsPage() {
 		setEnterBehavior((localStorage.getItem("enter_key_behavior") as "send" | "newline") || "send");
 	}, []);
 
-	function save() {
-		localStorage.setItem("openrouter_api_key", apiKey.trim());
-		localStorage.setItem("openrouter_model", model.trim());
-		localStorage.setItem("llm_prompt", prompt);
-		localStorage.setItem("user_accent_color", userAccent);
-		localStorage.setItem("ai_accent_color", aiAccent);
-		localStorage.setItem("enter_key_behavior", enterBehavior);
-		
+	// Auto-save handlers for each setting
+	const handleApiKeyChange = (value: string) => {
+		setApiKey(value);
+		localStorage.setItem("openrouter_api_key", value.trim());
+	};
+
+	const handleModelChange = (value: string) => {
+		setModel(value);
+		localStorage.setItem("openrouter_model", value.trim());
+	};
+
+	const handlePromptChange = (value: string) => {
+		setPrompt(value);
+		localStorage.setItem("llm_prompt", value);
+	};
+
+	const handleUserAccentChange = (value: AccentColor) => {
+		setUserAccent(value);
+		localStorage.setItem("user_accent_color", value);
 		// Update the accent color immediately using CSS variables
 		const isDark = document.documentElement.classList.contains("dark");
-		applyAccentColor(userAccent, isDark);
-		
-		toast.success("Settings saved successfully!");
-		// No need to reload - colors update immediately
-	}
+		applyAccentColor(value, isDark);
+	};
+
+	const handleAiAccentChange = (value: AccentColor) => {
+		setAiAccent(value);
+		localStorage.setItem("ai_accent_color", value);
+	};
+
+	const handleEnterBehaviorChange = (value: "send" | "newline") => {
+		setEnterBehavior(value);
+		localStorage.setItem("enter_key_behavior", value);
+	};
 
 	return (
 		<PageLayout
@@ -65,7 +81,7 @@ export default function SettingsPage() {
 								id="cfg_api_key"
 								type={show ? "text" : "password"}
 								value={apiKey}
-								onChange={(e) => setApiKey(e.target.value)}
+								onChange={(e) => handleApiKeyChange(e.target.value)}
 								placeholder="sk-or-..."
 							/>
 							<IconButton
@@ -97,14 +113,14 @@ export default function SettingsPage() {
 
 					<div className="space-y-2">
 						<Label htmlFor="cfg_model">Model</Label>
-						<ModelPicker value={model} onChange={setModel} />
+						<ModelPicker value={model} onChange={handleModelChange} />
 					</div>
 
 					<div className="space-y-2">
 						<Label htmlFor="cfg_prompt">System Prompt (Markdown)</Label>
 						<MarkdownEditor 
 							value={prompt} 
-							onChange={setPrompt}
+							onChange={handlePromptChange}
 							placeholder="Enter your system prompt in Markdown..."
 							minLines={6}
 							maxLines={24}
@@ -123,7 +139,7 @@ export default function SettingsPage() {
 
 					<div className="space-y-2">
 						<Label htmlFor="enter_behavior">Enter Key Behavior (Desktop)</Label>
-						<Select value={enterBehavior} onValueChange={(value: "send" | "newline") => setEnterBehavior(value)}>
+						<Select value={enterBehavior} onValueChange={handleEnterBehaviorChange}>
 							<SelectTrigger id="enter_behavior" className="w-full">
 								<SelectValue />
 							</SelectTrigger>
@@ -152,22 +168,18 @@ export default function SettingsPage() {
 					
 					<AccentColorPicker
 						value={userAccent}
-						onChange={setUserAccent}
+						onChange={handleUserAccentChange}
 						label="Your Accent Color"
 						description="This color will be used for your messages and the input field"
 					/>
 					
 					<AccentColorPicker
 						value={aiAccent}
-						onChange={setAiAccent}
+						onChange={handleAiAccentChange}
 						label="AI Assistant Accent Color"
 						description="This color will be used for AI assistant messages"
 					/>
 				</div>
-			</div>
-
-			<div className="flex justify-end pt-4">
-				<Button onClick={save} size="lg">Save Settings</Button>
 			</div>
 		</PageLayout>
 	);
