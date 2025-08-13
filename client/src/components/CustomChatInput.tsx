@@ -3,7 +3,7 @@ import { MarkdownEditor } from "./ui/markdown-editor";
 import { IconButton } from "./ui/icon-button";
 import { ArrowUp } from "lucide-react";
 import { getBubbleStyles } from '@/lib/bubble-styles';
-import type { AccentColor } from './ChatMessage';
+import type { AccentColor } from '@/lib/theme-colors';
 import { platform } from '@/utils/platform';
 import { useEffect, useState } from 'react';
 

@@ -14,7 +14,7 @@ import { Eye, EyeOff, Palette } from "lucide-react";
 import { useEffect, useState } from "react";
 import ModelPicker from "./ModelPicker";
 import { MarkdownEditor } from "./ui/markdown-editor";
-import type { AccentColor } from "./ChatMessage";
+import type { AccentColor } from "@/lib/theme-colors";
 import { AccentColorPicker } from "./AccentColorPicker";
 
 type Props = { onClose: () => void };
