@@ -19,11 +19,11 @@ const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
 		const variantClasses = {
 			default: "bg-primary text-primary-foreground hover:bg-primary/90",
 			ghost: selected 
-				? "bg-primary/10 text-primary hover:bg-primary/20" 
-				: "hover:bg-secondary",
+				? "bg-primary text-primary-foreground hover:bg-primary/90" 
+				: "text-foreground hover:bg-secondary",
 			outline: selected
-				? "border border-primary bg-primary/10 text-primary hover:bg-primary/20"
-				: "border border-input bg-background hover:bg-secondary",
+				? "border border-primary bg-primary text-primary-foreground hover:bg-primary/90"
+				: "border border-input bg-background text-foreground hover:bg-secondary",
 		};
 
 		return (
