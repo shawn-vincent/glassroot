@@ -6,7 +6,6 @@ import { Link, Outlet, useLocation } from "react-router-dom";
 import OfflineIndicator from "./components/OfflineIndicator";
 import { Toaster } from "./components/ui/sonner";
 import { useCapacitorKeyboard } from "@/hooks/useCapacitorKeyboard";
-import { ThemeToggle } from "./components/ThemeToggle";
 import { applyAccentColor, type AccentColor } from "@/lib/theme-colors";
 
 export default function App() {
@@ -55,9 +54,6 @@ export default function App() {
 						</IconButton>
 					</Link>
 				</nav>
-				<div className="flex gap-2 items-center">
-					<ThemeToggle />
-				</div>
 			</header>
 			<OfflineIndicator />
 			<Toaster richColors position="bottom-right" />
