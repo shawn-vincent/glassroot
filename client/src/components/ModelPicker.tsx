@@ -8,10 +8,12 @@ import {
 	CommandList,
 } from "@/components/ui/command";
 import {
-	Popover,
-	PopoverContent,
-	PopoverTrigger,
-} from "@/components/ui/popover";
+	Sheet,
+	SheetContent,
+	SheetHeader,
+	SheetTitle,
+	SheetTrigger,
+} from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import { Check, ChevronsUpDown, Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -68,8 +70,8 @@ export default function ModelPicker({
 	);
 
 	return (
-		<Popover open={open} onOpenChange={setOpen}>
-			<PopoverTrigger asChild>
+		<Sheet open={open} onOpenChange={setOpen}>
+			<SheetTrigger asChild>
 				<Button
 					variant="outline"
 					role="combobox"
@@ -84,66 +86,73 @@ export default function ModelPicker({
 						<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
 					)}
 				</Button>
-			</PopoverTrigger>
-			<PopoverContent
-				className="w-[var(--radix-popover-trigger-width)] p-0"
-				align="start"
-			>
-				<Command shouldFilter={false}>
-					<CommandInput
-						placeholder="Search models..."
-						value={searchValue}
-						onValueChange={setSearchValue}
-					/>
-					<CommandList>
-						{loading && models.length === 0 ? (
-							<CommandEmpty>Loading models...</CommandEmpty>
-						) : filteredModels.length === 0 ? (
-							<CommandEmpty>No models found.</CommandEmpty>
-						) : (
-							<CommandGroup>
-								{/* Add clear option */}
-								<CommandItem
-									value=""
-									onSelect={() => {
-										onChange("");
-										setOpen(false);
-										setSearchValue("");
-									}}
-								>
-									<Check
-										className={cn(
-											"mr-2 h-4 w-4",
-											value === "" ? "opacity-100" : "opacity-0",
-										)}
-									/>
-									<span className="text-muted-foreground">Clear selection</span>
-								</CommandItem>
-								{/* Model options */}
-								{filteredModels.map((model) => (
+			</SheetTrigger>
+			<SheetContent side="bottom" className="h-[85vh] max-h-[600px] flex flex-col p-0">
+				<SheetHeader className="px-4 py-3 border-b border-[var(--border)]">
+					<SheetTitle>Select Model</SheetTitle>
+				</SheetHeader>
+				<div className="flex-1 overflow-hidden flex flex-col">
+					<Command shouldFilter={false} className="flex-1">
+						<div className="px-4 py-2 border-b border-[var(--border)]">
+							<CommandInput
+								placeholder="Search models..."
+								value={searchValue}
+								onValueChange={setSearchValue}
+								className="h-9"
+							/>
+						</div>
+						<CommandList className="flex-1 overflow-y-auto">
+							{loading && models.length === 0 ? (
+								<CommandEmpty>Loading models...</CommandEmpty>
+							) : filteredModels.length === 0 ? (
+								<CommandEmpty>No models found.</CommandEmpty>
+							) : (
+								<CommandGroup className="p-2">
+									{/* Add clear option */}
 									<CommandItem
-										key={model.value}
-										value={model.value}
-										onSelect={(currentValue) => {
-											onChange(currentValue === value ? "" : currentValue);
+										value=""
+										onSelect={() => {
+											onChange("");
 											setOpen(false);
 											setSearchValue("");
 										}}
+										className="py-3 px-4 rounded-lg cursor-pointer"
 									>
 										<Check
 											className={cn(
-												"mr-2 h-4 w-4",
-												value === model.value ? "opacity-100" : "opacity-0",
+												"mr-3 h-4 w-4 shrink-0",
+												value === "" ? "opacity-100" : "opacity-0",
 											)}
 										/>
-										<span className="truncate">{model.label}</span>
+										<span className="text-muted-foreground">Clear selection</span>
 									</CommandItem>
-								))}
-							</CommandGroup>
-						)}
-					</CommandList>
-				</Command>
-			</PopoverContent>
-		</Popover>
+									{/* Model options */}
+									{filteredModels.map((model) => (
+										<CommandItem
+											key={model.value}
+											value={model.value}
+											onSelect={(currentValue) => {
+												onChange(currentValue === value ? "" : currentValue);
+												setOpen(false);
+												setSearchValue("");
+											}}
+											className="py-3 px-4 rounded-lg cursor-pointer"
+										>
+											<Check
+												className={cn(
+													"mr-3 h-4 w-4 shrink-0",
+													value === model.value ? "opacity-100" : "opacity-0",
+												)}
+											/>
+											<span className="text-sm break-all">{model.label}</span>
+										</CommandItem>
+									))}
+								</CommandGroup>
+							)}
+						</CommandList>
+					</Command>
+				</div>
+			</SheetContent>
+		</Sheet>
 	);
 }

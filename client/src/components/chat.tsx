@@ -8,12 +8,22 @@ import { ChatMessage, type MessageRole } from './ChatMessage'
 import type { AccentColor } from '@/lib/theme-colors'
 import { MarkdownContent } from './MarkdownContent'
 import { useEffect, useState } from 'react' 
-import { cn } from '@/lib/utils' 
+import { cn } from '@/lib/utils'
+import { useAutoScroll } from '@/hooks/useAutoScroll'
+import { ChevronDown } from 'lucide-react' 
 
 export function ChatSection() {
   const handler = useOpenRouterChat()
   const [userAccent, setUserAccent] = useState<AccentColor>('blue')
   const [aiAccent, setAiAccent] = useState<AccentColor>('purple')
+  
+  const {
+    scrollContainerRef,
+    sentinelRef,
+    isAtBottom,
+    scrollToBottom,
+    performAutoScroll
+  } = useAutoScroll({ threshold: 0.8, rootMargin: '0px 0px 100px 0px' })
   
   
   // Load accent colors from localStorage
@@ -24,7 +34,15 @@ export function ChatSection() {
     if (savedAiAccent) setAiAccent(savedAiAccent)
   }, [])
   
-  // Autoscroll intentionally removed for a fresh start
+  // Auto-scroll when new messages arrive or content updates
+  useEffect(() => {
+    performAutoScroll()
+  }, [handler.messages, handler.isLoading, performAutoScroll])
+  
+  // Smooth scroll to bottom on initial load
+  useEffect(() => {
+    scrollToBottom(false)
+  }, [])
   
   // Map message roles for our beautiful UI
   const mapMessageRole = (role: string, status?: string): MessageRole => {
@@ -84,7 +102,10 @@ export function ChatSection() {
       {/* Custom layout with no gap */}
       <div className="flex h-full w-full flex-col">
         {/* Messages container */}
-        <div className="flex-1 overflow-y-auto scrollable-content px-4 py-4 space-y-2">
+        <div 
+          ref={scrollContainerRef}
+          className="flex-1 overflow-y-auto scrollable-content px-4 py-4 space-y-2 relative"
+        >
         {handler.messages.map((message, index) => {
           const role = mapMessageRole(message.role, message.status)
           const accent = getMessageAccent(message.role)
@@ -130,8 +151,24 @@ export function ChatSection() {
           </div>
         )}
 
-        {/* Autoscroll and jump button removed */}
+        {/* Sentinel element for intersection observer */}
+        <div 
+          ref={sentinelRef}
+          className="h-px w-full"
+          aria-hidden="true"
+        />
       </div>
+      
+      {/* Scroll to bottom floating action button */}
+      {!isAtBottom && (
+        <button
+          onClick={() => scrollToBottom(true)}
+          className="absolute bottom-20 right-6 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition-all duration-200 hover:scale-110 hover:shadow-xl active:scale-95"
+          aria-label="Scroll to bottom"
+        >
+          <ChevronDown className="h-5 w-5" />
+        </button>
+      )}
       
       {/* Input - uses global accent color */}
       <div className="border-t border-[var(--border)] glass-subtle">
