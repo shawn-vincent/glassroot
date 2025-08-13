@@ -17,8 +17,16 @@ export default function App() {
 	// Apply persisted theme and accent color at app mount
 	useEffect(() => {
 		// Apply theme
-		const savedTheme = localStorage.getItem("theme");
-		const isDark = savedTheme === "dark";
+		const savedTheme = localStorage.getItem("theme") || "auto";
+		let isDark = false;
+		
+		if (savedTheme === "auto") {
+			// Use system preference
+			isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+		} else {
+			isDark = savedTheme === "dark";
+		}
+		
 		if (isDark) {
 			document.documentElement.classList.add("dark");
 		} else {
