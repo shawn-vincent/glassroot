@@ -7,24 +7,15 @@ import { CustomChatInput } from './CustomChatInput'
 import { ChatMessage, type MessageRole } from './ChatMessage'
 import type { AccentColor } from '@/lib/theme-colors'
 import { MarkdownContent } from './MarkdownContent'
-import { useEffect, useState } from 'react' 
-import { cn } from '@/lib/utils'
-import { useAutoScroll } from '@/hooks/useAutoScroll'
-import { ChevronDown } from 'lucide-react' 
+import { useEffect, useState, useRef } from 'react' 
+import { cn } from '@/lib/utils' 
 
 export function ChatSection() {
   const handler = useOpenRouterChat()
   const [userAccent, setUserAccent] = useState<AccentColor>('blue')
   const [aiAccent, setAiAccent] = useState<AccentColor>('purple')
   
-  const {
-    scrollContainerRef,
-    sentinelRef,
-    isAtBottom,
-    scrollToBottom,
-    performAutoScroll
-  } = useAutoScroll({ threshold: 0.8, rootMargin: '0px 0px 100px 0px' })
-  
+  const scrollContainerRef = useRef<HTMLDivElement>(null)
   
   // Load accent colors from localStorage
   useEffect(() => {
@@ -34,15 +25,13 @@ export function ChatSection() {
     if (savedAiAccent) setAiAccent(savedAiAccent)
   }, [])
   
-  // Auto-scroll when new messages arrive or content updates
+  // Always scroll to bottom when messages change or streaming
+  // biome-ignore lint/correctness/useExhaustiveDependencies: We want to scroll when messages or loading state changes
   useEffect(() => {
-    performAutoScroll()
-  }, [performAutoScroll])
-  
-  // Smooth scroll to bottom on initial load
-  useEffect(() => {
-    scrollToBottom(false)
-  }, [scrollToBottom])
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTop = scrollContainerRef.current.scrollHeight
+    }
+  }, [handler.messages, handler.isLoading])
   
   // Map message roles for our beautiful UI
   const mapMessageRole = (role: string, status?: string): MessageRole => {
@@ -151,25 +140,7 @@ export function ChatSection() {
           </div>
         )}
 
-        {/* Sentinel element for intersection observer */}
-        <div 
-          ref={sentinelRef}
-          className="h-px w-full"
-          aria-hidden="true"
-        />
       </div>
-      
-      {/* Scroll to bottom floating action button */}
-      {!isAtBottom && (
-        <button
-          type="button"
-          onClick={() => scrollToBottom(true)}
-          className="absolute bottom-20 right-6 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition-all duration-200 hover:scale-110 hover:shadow-xl active:scale-95"
-          aria-label="Scroll to bottom"
-        >
-          <ChevronDown className="h-5 w-5" />
-        </button>
-      )}
       
       {/* Input - uses global accent color */}
       <div className="border-t border-[var(--border)] glass-subtle">
