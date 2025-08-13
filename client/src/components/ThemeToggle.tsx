@@ -22,9 +22,12 @@ export function ThemeToggle() {
   }, [])
   
   const applyTheme = (selectedTheme: Theme) => {
+    let isDark = false
+    
     if (selectedTheme === 'auto') {
       // Use system preference
       const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+      isDark = prefersDark
       if (prefersDark) {
         document.documentElement.classList.add('dark')
       } else {
@@ -49,13 +52,15 @@ export function ThemeToggle() {
       return () => mediaQuery.removeEventListener('change', handleChange)
     } else if (selectedTheme === 'dark') {
       document.documentElement.classList.add('dark')
+      isDark = true
     } else {
+      // selectedTheme === 'light'
       document.documentElement.classList.remove('dark')
+      isDark = false
     }
     
     // Reapply the accent color for the new theme
     const savedAccent = (localStorage.getItem('user_accent_color') || 'blue') as AccentColor
-    const isDark = selectedTheme === 'dark' || (selectedTheme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches)
     applyAccentColor(savedAccent, isDark)
   }
   
