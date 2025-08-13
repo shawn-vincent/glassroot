@@ -178,7 +178,7 @@ export function AccentColorPicker({ value, onChange, label, description }: Accen
                       isSelected ? "ring-2 ring-offset-2" : "",
                       isSelected ? ringColorClasses[color] : ""
                     )}
-                    style={{ ['--tw-ring-offset-color' as any]: 'var(--bg)' }}
+                    style={{ '--tw-ring-offset-color': 'var(--bg)' } as React.CSSProperties}
                     title={colorLabel}
                     aria-label={`Select ${colorLabel} accent color`}
                   >

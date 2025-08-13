@@ -37,12 +37,12 @@ export function ChatSection() {
   // Auto-scroll when new messages arrive or content updates
   useEffect(() => {
     performAutoScroll()
-  }, [handler.messages, handler.isLoading, performAutoScroll])
+  }, [performAutoScroll])
   
   // Smooth scroll to bottom on initial load
   useEffect(() => {
     scrollToBottom(false)
-  }, [])
+  }, [scrollToBottom])
   
   // Map message roles for our beautiful UI
   const mapMessageRole = (role: string, status?: string): MessageRole => {
@@ -162,6 +162,7 @@ export function ChatSection() {
       {/* Scroll to bottom floating action button */}
       {!isAtBottom && (
         <button
+          type="button"
           onClick={() => scrollToBottom(true)}
           className="absolute bottom-20 right-6 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition-all duration-200 hover:scale-110 hover:shadow-xl active:scale-95"
           aria-label="Scroll to bottom"

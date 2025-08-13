@@ -50,7 +50,9 @@ export function ThemeToggle() {
       mediaQuery.addEventListener('change', handleChange)
       // Store cleanup function
       return () => mediaQuery.removeEventListener('change', handleChange)
-    } else if (selectedTheme === 'dark') {
+    }
+    
+    if (selectedTheme === 'dark') {
       document.documentElement.classList.add('dark')
       isDark = true
     } else {
